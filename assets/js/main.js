@@ -258,6 +258,16 @@ function initLeadForm() {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
 
+      // Push to GTM dataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'lead_form_submitted',
+        leadName: name,
+        leadEmail: email,
+        leadCompany: company,
+        leadChallenge: challenge
+      });
+
       // Show success modal
       showSuccessModal(name);
       form.reset();
@@ -341,6 +351,12 @@ function initCalendlyModal() {
 
 function openCalendlyScheduler() {
   if (document.getElementById('calendly-modal')) return;
+
+  // Push to GTM dataLayer
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'calendly_modal_opened'
+  });
 
   const trans = window.translations[currentLanguage];
 
@@ -459,6 +475,15 @@ function initWhatsAppBadge() {
     waTooltip.classList.remove('opacity-0', 'scale-90');
     waTooltip.classList.add('opacity-100', 'scale-100');
   });
+
+  // Track WhatsApp click
+  waContainer.querySelector('a').addEventListener('click', () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'whatsapp_clicked',
+      clickLocation: 'floating_badge'
+    });
+  });
 }
 
 /* ==========================================
@@ -505,3 +530,17 @@ function initMobileMenu() {
     });
   });
 }
+
+/* ==========================================
+   7. ANALYTICS & CALENDLY CONVERSION LISTENER
+   ========================================== */
+window.addEventListener('message', (e) => {
+  // Check if message is from Calendly
+  if (e.data.event && e.data.event.indexOf('calendly') === 0) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: e.data.event, // e.g. "calendly.event_type_selected", "calendly.date_and_time_selected", "calendly.event_scheduled"
+      calendlyEventPayload: e.data.payload || {}
+    });
+  }
+});
