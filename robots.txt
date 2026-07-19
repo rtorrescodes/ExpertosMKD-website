@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://expertosmkd.com/sitemap.xml
