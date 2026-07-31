@@ -253,25 +253,42 @@ function initLeadForm() {
       ${processingText}
     `;
 
-    // Simulate API Call
-    setTimeout(() => {
+    // Real API Call via fetch to send-mail.php
+    fetch('send-mail.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, email, company, challenge })
+    })
+    .then(response => response.json())
+    .then(data => {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
 
-      // Push to GTM dataLayer
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: 'lead_form_submitted',
-        leadName: name,
-        leadEmail: email,
-        leadCompany: company,
-        leadChallenge: challenge
-      });
+      if (data.success) {
+        // Track GTM Conversion
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'lead_form_submitted',
+          leadName: name,
+          leadEmail: email,
+          leadCompany: company,
+          leadChallenge: challenge
+        });
 
-      // Show success modal
-      showSuccessModal(name);
-      form.reset();
-    }, 2000);
+        form.reset();
+        showSuccessModal(name);
+      } else {
+        alert(currentLanguage === 'en' ? 'Error sending email: ' + data.error : 'Error al enviar el correo: ' + data.error);
+      }
+    })
+    .catch(error => {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+      console.error('Error:', error);
+      alert(currentLanguage === 'en' ? 'Network error. Please try again.' : 'Error de red. Por favor intenta nuevamente.');
+    });
   });
 }
 
