@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "services": "Services",
+    "methodology": "Methodology",
+    "blog": "Blog",
+    "audit": "Free Audit",
+    "language": "ES"
+  },
+  "hero": {
+    "badge": "Premium Digital Agency",
+    "title1": "Websites that sell.",
+    "title2": "Marketing that scales.",
+    "rotating_phrases": [
+      { "text": "High-performance ", "highlight": "websites." },
+      { "text": "Marketing ", "highlight": "that scales." },
+      { "text": "Data-driven ", "highlight": "strategies." },
+      { "text": "Intelligent ", "highlight": "automation." },
+      { "text": "Growth ", "highlight": "without limits." }
+    ],
+    "description": "ExpertosMKD is the full-stack agency for businesses that demand results. We design high-converting digital ecosystems and data-driven campaigns to multiply your ROI.",
+    "cta_audit": "Request Analysis",
+    "cta_services": "Our Services"
+  },
+  "web_dev": {
+    "title": "Just looking for a website?",
+    "subtitle": "Much more than simple web design",
+    "description": "We don't do 'brochure' sites. We build digital ecosystems with enterprise-grade security, deep SEO optimization, and architectures designed 100% to sell. If you want to truly compete, we'll build your foundation.",
+    "cta": "I Want a Website that Sells"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Complete solutions to dominate the digital market.",
+    "web_design": {
+      "title": "Web Design & E-commerce",
+      "desc": "Fast, responsive sites designed specifically to maximize conversions."
+    },
+    "hosting": {
+      "title": "Premium Hosting",
+      "desc": "Ultra-fast and secure servers so your business never stops."
+    },
+    "campaigns": {
+      "title": "Growth Marketing & Ads",
+      "desc": "Advanced paid campaigns (Google & Meta) and automated funnels focused on generating leads and scaling your revenue."
+    },
+    "social": {
+      "title": "Social Media & CM",
+      "desc": "We build community and brand authority with high-value content."
+    },
+    "consulting": {
+      "title": "Business Review",
+      "desc": "We analyze your commercial processes and give you the exact roadmap to scale."
+    },
+    "apps": {
+      "title": "App & Web Systems Development",
+      "desc": "We build mobile apps and complex web platforms tailored to your operations."
+    },
+    "crm_ai": {
+      "title": "Custom CRMs with AI",
+      "desc": "Custom management systems with AI-driven lead automation and qualification."
+    },
+    "seo": {
+      "title": "Advanced SEO",
+      "desc": "Organic ranking on Google, technical SEO, Linkbuilding, and local optimization."
+    },
+    "email": {
+      "title": "Email Marketing Automations",
+      "desc": "Automated sequences and email campaigns that nurture leads and retain customers."
+    },
+    "cro": {
+      "title": "CRO Optimization",
+      "desc": "A/B testing, heatmaps, and UX analysis to maximize the conversion rate of every visitor."
+    },
+    "content": {
+      "title": "Content Marketing & Copy",
+      "desc": "Content strategies and persuasive copywriting designed specifically to sell."
+    }
+  },
+  "methodology": {
+    "title": "Why ExpertosMKD",
+    "step1": "Market Audit",
+    "step1_desc": "We analyze your competition and current funnels to find the exact revenue leaks and opportunities.",
+    "step2": "Strategic Engineering",
+    "step2_desc": "We chart a customized action plan with mathematical projections and B2B-oriented conversion architecture.",
+    "step3": "High-Level Execution",
+    "step3_desc": "We develop your systems, design the web platform, and launch scalable automated campaigns.",
+    "step4": "Continuous Optimization",
+    "step4_desc": "We measure, iterate, and scale results based on pure real-time data, not assumptions."
+  },
+  "blog": {
+    "title": "Latest Articles",
+    "subtitle": "Learn from digital marketing experts.",
+    "read_more": "Read Article"
+  },
+  "contact": {
+    "title": "Elevate your business today.",
+    "desc": "Leave your details. A strategist will evaluate your situation and propose an action plan with no commitment.",
+    "name": "Your Name",
+    "email": "Your Email",
+    "challenge": "What's your biggest challenge right now?",
+    "submit": "Submit Request"
+  },
+  "footer": {
+    "rights": "© 2026 ExpertosMKD. All rights reserved.",
+    "description": "We accelerate the growth of B2B and SaaS companies through conversion engineering and data strategies.",
+    "services_title": "Services",
+    "company_title": "Company",
+    "legal_title": "Legal",
+    "made_with": "Made with ❤ in Next.js",
+    "services": {
+      "web": "Pro Web Development",
+      "leads": "B2B Lead Generation",
+      "seo": "SEO/SEM Strategy",
+      "ai": "AI Automation"
+    },
+    "company": {
+      "about": "About Us",
+      "cases": "Case Studies",
+      "blog": "Blog",
+      "contact": "Contact"
+    },
+    "legal": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    }
+  }
+}

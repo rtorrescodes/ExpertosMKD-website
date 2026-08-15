@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "services": "Servicios",
+    "methodology": "Metodología",
+    "blog": "Blog",
+    "audit": "Auditoría Gratuita",
+    "language": "EN"
+  },
+  "hero": {
+    "badge": "Agencia de Marketing Premium",
+    "title1": "Sitios web que venden.",
+    "title2": "Marketing que escala.",
+    "rotating_phrases": [
+      { "text": "Sitios web ", "highlight": "de alto rendimiento." },
+      { "text": "Marketing ", "highlight": "que escala." },
+      { "text": "Estrategias ", "highlight": "basadas en datos." },
+      { "text": "Automatización ", "highlight": "inteligente." },
+      { "text": "Crecimiento ", "highlight": "sin límites." }
+    ],
+    "description": "ExpertosMKD es la agencia integral para empresas que exigen resultados. Diseñamos ecosistemas digitales de alta conversión y campañas basadas en datos reales para multiplicar tu ROI.",
+    "cta_audit": "Solicitar Análisis",
+    "cta_services": "Nuestros Servicios"
+  },
+  "web_dev": {
+    "title": "¿Solo buscas una página web?",
+    "subtitle": "Mucho más que un simple diseño web",
+    "description": "No hacemos páginas 'de adorno'. Construimos ecosistemas digitales con seguridad de grado empresarial, optimización SEO técnica y arquitecturas pensadas 100% para la venta. Si quieres competir de verdad, nosotros te armamos la base.",
+    "cta": "Quiero una Web que Venda"
+  },
+  "services": {
+    "title": "Nuestros Servicios",
+    "subtitle": "Soluciones completas para dominar el mercado digital.",
+    "web_design": {
+      "title": "Diseño Web & E-commerce",
+      "desc": "Sitios rápidos, responsivos y diseñados específicamente para maximizar las conversiones."
+    },
+    "hosting": {
+      "title": "Hosting Premium",
+      "desc": "Servidores ultrarrápidos y seguros para que tu negocio nunca se detenga."
+    },
+    "campaigns": {
+      "title": "Growth Marketing & Ads",
+      "desc": "Campañas de pago avanzadas (Google & Meta) y embudos automatizados enfocados en generar prospectos y escalar tu facturación."
+    },
+    "social": {
+      "title": "Redes Sociales & CM",
+      "desc": "Construimos comunidad y autoridad de marca con contenido de alto valor."
+    },
+    "consulting": {
+      "title": "Revisión de Negocio",
+      "desc": "Analizamos tus procesos comerciales y te damos el roadmap exacto para escalar."
+    },
+    "apps": {
+      "title": "Desarrollo de Apps y Sistemas Web",
+      "desc": "Creamos aplicaciones móviles y plataformas web complejas a la medida de tu operativa."
+    },
+    "crm_ai": {
+      "title": "CRMs Personalizados con IA",
+      "desc": "Sistemas de gestión a medida, con automatización y cualificación de leads impulsada por Inteligencia Artificial."
+    },
+    "seo": {
+      "title": "SEO Avanzado",
+      "desc": "Posicionamiento orgánico en Google, SEO técnico, Linkbuilding y optimización local."
+    },
+    "email": {
+      "title": "Email Marketing Automations",
+      "desc": "Secuencias automatizadas y campañas de correo que nutren prospectos y retienen clientes."
+    },
+    "cro": {
+      "title": "Optimización CRO",
+      "desc": "Pruebas A/B, mapas de calor y análisis de UX para maximizar la tasa de conversión de cada visita."
+    },
+    "content": {
+      "title": "Content Marketing & Copy",
+      "desc": "Estrategias de contenido y redacción persuasiva diseñada específicamente para vender."
+    }
+  },
+  "methodology": {
+    "title": "Por qué ExpertosMKD",
+    "step1": "Auditoría de Mercado",
+    "step1_desc": "Analizamos tu competencia y embudos actuales para encontrar las fugas de dinero y oportunidades exactas.",
+    "step2": "Ingeniería Estratégica",
+    "step2_desc": "Trazamos un plan de acción con proyecciones matemáticas y arquitectura orientada a la conversión B2B.",
+    "step3": "Ejecución de Alto Nivel",
+    "step3_desc": "Desarrollamos tus sistemas, diseñamos la plataforma web y lanzamos campañas automatizadas escalables.",
+    "step4": "Optimización Continua",
+    "step4_desc": "Medimos, iteramos y escalamos los resultados basándonos en datos puros en tiempo real, no en suposiciones."
+  },
+  "blog": {
+    "title": "Últimos Artículos",
+    "subtitle": "Aprende de los expertos en marketing digital.",
+    "read_more": "Leer Artículo"
+  },
+  "contact": {
+    "title": "Eleva tu negocio hoy.",
+    "desc": "Déjanos tus datos. Un estratega evaluará tu situación y te propondrá un plan de acción sin compromiso.",
+    "name": "Tu Nombre",
+    "email": "Tu Correo Electrónico",
+    "challenge": "¿Cuál es tu mayor reto actual?",
+    "submit": "Enviar Solicitud"
+  },
+  "footer": {
+    "rights": "© 2026 ExpertosMKD. Todos los derechos reservados.",
+    "description": "Aceleramos el crecimiento de empresas B2B y SaaS mediante ingeniería de conversión y estrategias de datos.",
+    "services_title": "Servicios",
+    "company_title": "Compañía",
+    "legal_title": "Legal",
+    "made_with": "Hecho con ❤ en Next.js",
+    "services": {
+      "web": "Desarrollo Web Pro",
+      "leads": "Generación de Leads B2B",
+      "seo": "Estrategia SEO/SEM",
+      "ai": "Automatización IA"
+    },
+    "company": {
+      "about": "Nosotros",
+      "cases": "Casos de Éxito",
+      "blog": "Blog",
+      "contact": "Contacto"
+    },
+    "legal": {
+      "privacy": "Aviso de Privacidad",
+      "terms": "Términos de Servicio",
+      "cookies": "Política de Cookies"
+    }
+  }
+}
