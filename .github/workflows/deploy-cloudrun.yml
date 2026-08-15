@@ -1,0 +1,65 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  # VARIABLES DE ENTORNO (Configurables en GitHub Repo > Settings > Variables > Actions)
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'TU-PROJECT-ID' }}
+  GCP_REGION: ${{ vars.GCP_REGION || 'us-central1' }}
+  SERVICE_NAME: ${{ vars.SERVICE_NAME || 'expertosmkd-web' }}
+
+jobs:
+  deploy:
+    name: Build & Deploy to Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # AUTENTICACIÓN CON GOOGLE CLOUD
+      # Opción 1 (Recomendada): Workload Identity Federation
+      # Opción 2: Service Account Key (JSON) en los secretos de GitHub
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          # Si usas Workload Identity Federation en vez de llaves estáticas, usa:
+          # workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          # service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      # CONFIGURAR DOCKER
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker Auth
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      # CONSTRUIR Y SUBIR IMAGEN A ARTIFACT REGISTRY
+      # Asegúrate de haber creado el repositorio "cloud-run-source-deploy" en GCP Artifact Registry
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_PATH="${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/cloud-run-source-deploy/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          docker build -t $IMAGE_PATH .
+          docker push $IMAGE_PATH
+
+      # DESPLEGAR A CLOUD RUN
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.GCP_REGION }}
+          image: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/cloud-run-source-deploy/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          # Para permitir acceso público (no requiere autenticación IAM para ver la web)
+          flags: '--allow-unauthenticated'
+          # Puedes pasar variables de entorno a tu app (ej. RESELLER_USER_ID)
+          env_vars: |
+            RESELLER_USER_ID=${{ secrets.RESELLER_USER_ID }}
+            RESELLER_API_KEY=${{ secrets.RESELLER_API_KEY }}
+
+      - name: Display App URL
+        run: echo "🎉 Deploy exitoso! URL de la App -> ${{ steps.deploy.outputs.url }}"
