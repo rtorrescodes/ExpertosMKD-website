@@ -13,6 +13,7 @@ import { GlyphMatrix } from '@/components/magicui/glyph-matrix'
 import { Logo } from '@/components/Logo'
 import { HeroMockups } from '@/components/HeroMockups'
 import { ScrollToTop } from '@/components/ScrollToTop'
+import DomainSearch from '@/components/DomainSearch'
 import { posts } from '@/data/posts'
 import BlogCarousel from '@/components/BlogCarousel'
 import Link from 'next/link'
@@ -118,6 +119,11 @@ export default async function LandingPage({
           ))}
         </div>
       </div>
+
+      {/* DOMAIN SEARCH SECTION */}
+      <section className="px-6 relative z-10">
+        <DomainSearch dict={dict.domain_search as any} />
+      </section>
 
       {/* WEB DEV FUNNEL */}
       <section className="py-24 relative">

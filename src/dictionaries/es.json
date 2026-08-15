@@ -116,12 +116,38 @@
       "about": "Nosotros",
       "cases": "Casos de Éxito",
       "blog": "Blog",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "partners": "Partners"
     },
     "legal": {
       "privacy": "Aviso de Privacidad",
       "terms": "Términos de Servicio",
       "cookies": "Política de Cookies"
+    }
+  },
+  "domain_search": {
+    "title": "Asegura el nombre de tu empresa",
+    "subtitle": "Busca tu dominio ideal y reserva tu presencia web antes de que alguien más lo haga.",
+    "placeholder": "ejemplo.com",
+    "button_search": "Buscar",
+    "loading": "Consultando...",
+    "available": "¡Felicidades! El dominio está disponible.",
+    "unavailable": "Lo sentimos, el dominio ya está ocupado.",
+    "cta_reserve": "Reservar Ahora",
+    "error": "Hubo un error al consultar, intenta nuevamente."
+  },
+  "legal_content": {
+    "privacy": {
+      "title": "Aviso de Privacidad",
+      "content": "Última actualización: 14 de Agosto de 2026\n\nEn ExpertosMKD (\"nosotros\", \"nuestro\" o \"la Agencia\"), valoramos profundamente su privacidad y nos comprometemos a proteger sus datos personales. Este Aviso de Privacidad explica cómo recopilamos, utilizamos, divulgamos y salvaguardamos su información cuando visita nuestro sitio web o interactúa con nuestros servicios.\n\n1. Recopilación de Información\nRecopilamos información personal (como nombre, correo electrónico, empresa y retos de negocio) de forma voluntaria a través de nuestros formularios de contacto, así como datos técnicos (direcciones IP, tipo de navegador, sistema operativo) recopilados automáticamente mediante cookies para fines analíticos.\n\n2. Uso de la Información\nLos datos recopilados se utilizan estrictamente para: proveer auditorías de marketing, personalizar nuestras propuestas B2B, mejorar la experiencia de usuario (UX) en nuestra plataforma, y comunicarnos directamente sobre temas de su interés. No vendemos ni alquilamos su información a terceros.\n\n3. Seguridad de los Datos\nImplementamos medidas de seguridad de grado empresarial, encriptación y protocolos de acceso restringido para prevenir el acceso no autorizado, alteración, o destrucción de sus datos.\n\n4. Jurisdicción y Derechos\nUsted tiene derecho a acceder, rectificar o eliminar sus datos en cualquier momento contactándonos. Cualquier disputa derivada de este aviso será resuelta bajo las leyes vigentes en [Ciudad/País]."
+    },
+    "terms": {
+      "title": "Términos de Servicio",
+      "content": "Última actualización: 14 de Agosto de 2026\n\nBienvenido a ExpertosMKD. Al utilizar este sitio web y contratar nuestros servicios de desarrollo web, SEO o marketing digital, usted acepta regirse por los siguientes términos y condiciones:\n\n1. Descripción de los Servicios\nExpertosMKD actúa como una agencia consultora y ejecutora B2B. Los resultados de posicionamiento orgánico (SEO) o publicidad (Ads) dependen de múltiples variables del mercado y algoritmos de terceros, por lo que las proyecciones son estimaciones estratégicas, no garantías contractuales absolutas.\n\n2. Propiedad Intelectual\nTodo el código, diseño UI/UX, estrategias y textos desarrollados durante un proyecto pertenecen a ExpertosMKD hasta la liquidación total de los honorarios acordados, momento en el que los derechos de uso se transfieren al cliente.\n\n3. Limitación de Responsabilidad\nEn ningún caso ExpertosMKD será responsable de daños indirectos, incidentales, o pérdida de beneficios que resulten del uso o incapacidad de uso de nuestros servicios, o debido a penalizaciones de plataformas de terceros (como Google o Meta).\n\n4. Modificaciones\nNos reservamos el derecho de modificar estos términos en cualquier momento. La continuación en el uso de los servicios implica la aceptación de los nuevos términos.\n\n5. Jurisdicción\nEstos términos se rigen por las leyes aplicables en [Ciudad/País]."
+    },
+    "cookies": {
+      "title": "Política de Cookies",
+      "content": "Última actualización: 14 de Agosto de 2026\n\nEste sitio web utiliza cookies y tecnologías similares para garantizar el funcionamiento técnico y analizar el tráfico con el fin de optimizar nuestra estrategia de marketing.\n\n1. ¿Qué son las cookies?\nSon pequeños archivos de texto que se almacenan en su dispositivo al visitar un sitio web. Ayudan a recordar sus preferencias y entender cómo interactúa con el contenido.\n\n2. Tipos de Cookies que Utilizamos\n- Cookies Estrictamente Necesarias: Indispensables para la navegación básica (ej. mantener el idioma seleccionado).\n- Cookies de Rendimiento y Analítica: Usadas (vía herramientas como Google Analytics) para contar visitas, fuentes de tráfico y mejorar el rendimiento del sitio. Son anónimas.\n- Cookies de Marketing: Utilizadas para rastrear la eficacia de nuestras campañas B2B y ofrecer contenido relevante.\n\n3. Control de Cookies\nUsted puede configurar su navegador en cualquier momento para rechazar total o parcialmente la instalación de cookies, aunque esto podría afectar la experiencia de usuario en la plataforma."
     }
   }
 }

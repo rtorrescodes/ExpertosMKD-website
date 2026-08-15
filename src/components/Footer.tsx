@@ -3,6 +3,7 @@ import { Logo } from '@/components/Logo'
 import { HexagonPattern } from '@/components/magicui/hexagon-pattern'
 import { MessageCircle } from 'lucide-react'
 import { ScrollToTop } from '@/components/ScrollToTop'
+import LegalModals from '@/components/LegalModals'
 
 export default async function Footer({ lang }: { lang: 'en' | 'es' }) {
   const dict = await getDictionary(lang)
@@ -58,17 +59,22 @@ export default async function Footer({ lang }: { lang: 'en' | 'es' }) {
             
             <div>
               <h3 className="text-white font-bold mb-6">{dict.footer.legal_title}</h3>
-              <ul className="space-y-4">
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.legal.privacy}</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.legal.terms}</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.legal.cookies}</a></li>
-              </ul>
+              {/* @ts-ignore */}
+              <LegalModals 
+                linksText={dict.footer.legal} 
+                content={dict.legal_content} 
+              />
             </div>
           </div>
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-white/10">
             <p className="text-slate-500 text-sm font-medium">{dict.footer.rights}</p>
-            <div className="flex items-center gap-4 text-sm text-slate-500">
+            
+            <a href="https://codanta.dev" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors font-medium">
+              {dict.footer.company.partners}: <span className="font-bold text-white">Codanta.dev</span>
+            </a>
+
+            <div className="flex items-center gap-4 text-sm text-slate-500 hidden md:flex">
               {dict.footer.made_with.split("❤")[0]}<span className="text-red-500">❤</span>{dict.footer.made_with.split("❤")[1]}
             </div>
           </div>
