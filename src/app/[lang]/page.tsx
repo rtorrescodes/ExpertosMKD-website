@@ -11,7 +11,12 @@ import { ShinyButton } from '@/components/magicui/shiny-button'
 import { HexagonPattern } from '@/components/magicui/hexagon-pattern'
 import { GlyphMatrix } from '@/components/magicui/glyph-matrix'
 import { Logo } from '@/components/Logo'
+import { HeroMockups } from '@/components/HeroMockups'
+import { ScrollToTop } from '@/components/ScrollToTop'
+import { posts } from '@/data/posts'
+import BlogCarousel from '@/components/BlogCarousel'
 import Link from 'next/link'
+import Footer from '@/components/Footer'
 
 export default async function LandingPage({
   params
@@ -65,7 +70,7 @@ export default async function LandingPage({
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative pt-40 pb-20 md:pt-52 md:pb-32">
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-visible z-20">
         <div className="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-cyan-400 mb-8 font-semibold">
@@ -91,28 +96,12 @@ export default async function LandingPage({
             </div>
           </div>
 
-          <div className="relative hidden lg:block h-[600px] w-full" style={{ perspective: '1000px' }}>
-             {/* Desktop Mockup (Safari) */}
-             <div 
-                className="absolute top-10 -right-20 w-[120%] transition-transform duration-700 hover:transform-none"
-                style={{ transform: 'rotateY(-10deg) rotateX(5deg)' }}
-             >
-                <Safari src="/mockup-desktop.jpg" className="w-full shadow-[0_0_50px_rgba(34,211,238,0.15)]" />
-             </div>
-             
-             {/* Mobile Mockup (iPhone) */}
-             <div 
-                className="absolute -bottom-10 left-0 w-[35%] z-20 transition-transform duration-700 hover:-translate-y-4"
-                style={{ transform: 'rotateY(15deg) rotateX(5deg) translateY(2.5rem)', transformOrigin: 'bottom left' }}
-             >
-                <Iphone15Pro src="/mockup-mobile.jpg" className="shadow-[0_0_50px_rgba(168,85,247,0.2)]" />
-             </div>
-          </div>
+          <HeroMockups />
         </div>
       </section>
 
       {/* INFINITE MARQUEE */}
-      <div className="w-full bg-cyan-900/20 border-y border-cyan-500/20 py-4 overflow-hidden relative flex">
+      <div className="w-full bg-cyan-900/20 border-y border-cyan-500/20 py-4 overflow-hidden relative flex z-10">
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-slate-950 z-10 w-full pointer-events-none"></div>
         <div className="whitespace-nowrap flex animate-marquee items-center gap-16 text-cyan-400/70 font-bold tracking-widest text-sm uppercase">
           {Array(8).fill(0).map((_, i) => (
@@ -276,17 +265,80 @@ export default async function LandingPage({
                 <div className="w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl absolute animate-blob"></div>
                 <div className="w-64 h-64 bg-purple-500/20 rounded-full blur-3xl absolute animate-blob animation-delay-2000 translate-x-20"></div>
                 
-                <div className="relative z-10 flex flex-col gap-6 w-full px-12">
-                   {[1,2,3].map((item) => (
-                     <div key={item} className="w-full h-20 glass bg-white/5 rounded-2xl border border-white/10 flex items-center px-6 gap-4">
-                        <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
-                          <CheckCircle2 className="w-5 h-5 text-cyan-400" />
-                        </div>
-                        <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
-                          <div className={`h-full bg-gradient-to-r from-cyan-400 to-indigo-500 w-${item}/3`}></div>
-                        </div>
-                     </div>
-                   ))}
+                <div className="relative z-10 flex flex-col gap-4 w-full px-6 md:px-8">
+                  
+                  {/* Main Metric Card */}
+                  <div className="group relative p-6 rounded-2xl glass border border-white/10 bg-slate-900/50 backdrop-blur-md shadow-2xl hover:-translate-y-1 transition-transform cursor-default">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-slate-300 font-semibold text-sm flex items-center gap-2">
+                        Conversion Rate
+                        <div className="w-4 h-4 rounded-full bg-slate-700/50 border border-slate-600 text-[10px] flex items-center justify-center text-slate-300">?</div>
+                      </span>
+                      <span className="text-emerald-400 text-xs font-bold bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">+124%</span>
+                    </div>
+                    <div className="text-4xl font-extrabold text-white mb-3">4.85%</div>
+                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-emerald-400 to-cyan-500 w-[75%] rounded-full"></div>
+                    </div>
+                    
+                    {/* Tooltip */}
+                    <div className="absolute -top-14 left-0 right-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                      <div className="bg-slate-800 border border-slate-600 text-slate-100 text-xs p-3 rounded-xl shadow-xl text-center">
+                        <strong>Tasa de Conversión:</strong> Porcentaje de visitantes que se transforman en prospectos o ventas reales.
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Secondary Metrics Row */}
+                  <div className="flex gap-4">
+                    <div className="group relative flex-1 p-5 rounded-2xl glass border border-white/10 bg-slate-900/50 backdrop-blur-md shadow-lg hover:-translate-y-1 hover:z-50 transition-all cursor-default">
+                       <div className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider flex items-center justify-between">
+                         CPL
+                         <div className="w-4 h-4 rounded-full bg-slate-700/50 border border-slate-600 text-[10px] flex items-center justify-center text-slate-300">?</div>
+                       </div>
+                       <div className="text-2xl font-bold text-white">$12.40</div>
+                       <div className="text-emerald-400 text-xs mt-2 font-medium flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3" /> ↓ 32% (MoM)
+                       </div>
+                       
+                       <div className="absolute -top-16 left-0 w-full min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60]">
+                         <div className="bg-slate-800 border border-slate-600 text-slate-100 text-xs p-3 rounded-xl shadow-xl text-center">
+                           <strong>Costo por Lead:</strong> Lo que cuesta adquirir un nuevo prospecto calificado.
+                         </div>
+                       </div>
+                    </div>
+                    
+                    <div className="group relative flex-1 p-5 rounded-2xl glass border border-white/10 bg-slate-900/50 backdrop-blur-md shadow-lg hover:-translate-y-1 hover:z-50 transition-all cursor-default">
+                       <div className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider flex items-center justify-between">
+                         ROAS
+                         <div className="w-4 h-4 rounded-full bg-slate-700/50 border border-slate-600 text-[10px] flex items-center justify-center text-slate-300">?</div>
+                       </div>
+                       <div className="text-2xl font-bold text-white">4.2x</div>
+                       <div className="text-emerald-400 text-xs mt-2 font-medium flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3" /> ↑ 1.5x (MoM)
+                       </div>
+                       
+                       <div className="absolute -top-16 right-0 w-full min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60]">
+                         <div className="bg-slate-800 border border-slate-600 text-slate-100 text-xs p-3 rounded-xl shadow-xl text-center">
+                           <strong>Retorno de Inversión:</strong> Por cada $1 invertido, generamos $4.2.
+                         </div>
+                       </div>
+                    </div>
+                  </div>
+                  
+                  {/* Mini Chart Row */}
+                  <div className="p-5 rounded-2xl glass border border-white/10 bg-slate-900/50 backdrop-blur-md shadow-lg cursor-default">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-slate-300 font-semibold text-sm">Leads Generados (Q3)</span>
+                      <span className="text-cyan-400 font-bold">+850</span>
+                    </div>
+                    <div className="flex items-end gap-2 h-10">
+                       {[35, 45, 30, 60, 85, 70, 90, 100].map((h, i) => (
+                         <div key={i} className="flex-1 bg-cyan-900/50 rounded-t-sm hover:bg-cyan-400 transition-colors" style={{ height: `${h}%` }}></div>
+                       ))}
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -319,38 +371,6 @@ export default async function LandingPage({
          </div>
       </section>
 
-      {/* BLOG PREVIEW */}
-      <section id="blog" className="py-24 relative border-t border-white/5">
-         <div className="max-w-7xl mx-auto px-6">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-               <div>
-                 <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-white">{dict.blog.title}</h2>
-                 <p className="text-slate-400 text-lg">{dict.blog.subtitle}</p>
-               </div>
-               <a href="#blog" className="flex items-center gap-2 text-cyan-400 font-bold hover:text-cyan-300 transition-colors px-6 py-3 rounded-full glass border border-white/10 hover:border-cyan-500/30">
-                  {dict.blog.read_more} <ArrowRight className="w-4 h-4" />
-               </a>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-               {[1,2,3].map((item) => (
-                 <div key={item} className="glass-card rounded-3xl overflow-hidden hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(34,211,238,0.1)] transition-all duration-500 group">
-                    <div className="h-56 bg-slate-900 flex items-center justify-center relative overflow-hidden">
-                       <div className="absolute inset-0 bg-gradient-to-tr from-cyan-900/40 to-indigo-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                       <PenTool className="w-10 h-10 text-slate-700 group-hover:scale-110 group-hover:text-cyan-400 transition-all duration-500 relative z-10" />
-                    </div>
-                    <div className="p-8">
-                       <div className="inline-block px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold mb-4 border border-cyan-500/20">MARKETING</div>
-                       <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors">Lorem ipsum dolor sit amet consectetur</h3>
-                       <span className="text-sm font-bold text-slate-400 flex items-center gap-2 group-hover:text-white transition-colors">
-                          {dict.blog.read_more} <ChevronRight className="w-4 h-4 text-cyan-400" />
-                       </span>
-                    </div>
-                 </div>
-               ))}
-            </div>
-         </div>
-      </section>
 
       {/* CONTACT SECTION */}
       <section id="contact" className="py-24 relative overflow-hidden border-t border-white/5">
@@ -390,85 +410,30 @@ export default async function LandingPage({
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="relative bg-[#01040f] border-t border-white/10 overflow-hidden pt-20 pb-12">
-        {/* Magic UI Hexagon Pattern Background */}
-        <div className="absolute inset-0 z-0">
-          <HexagonPattern size={40} className="text-cyan-500/10" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#01040f] via-transparent to-[#01040f]"></div>
-        </div>
-
+      {/* BLOG / INSIGHTS SECTION */}
+      <section id="blog" className="py-24 relative overflow-hidden bg-transparent backdrop-blur-md">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-cyan-600/5 blur-[120px] rounded-full pointer-events-none"></div>
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-            <div className="md:col-span-1">
-              <div className="mb-6">
-                <Logo className="text-2xl" />
-              </div>
-              <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                {dict.footer.description}
-              </p>
-              <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-cyan-500/20 transition-all border border-white/10">
-                  <span className="sr-only">Twitter</span>
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
-                </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-cyan-500/20 transition-all border border-white/10">
-                  <span className="sr-only">LinkedIn</span>
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clipRule="evenodd" /></svg>
-                </a>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-white font-bold mb-6">{dict.footer.services_title}</h3>
-              <ul className="space-y-4">
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.services.web}</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.services.leads}</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.services.seo}</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.services.ai}</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-white font-bold mb-6">{dict.footer.company_title}</h3>
-              <ul className="space-y-4">
-                <li><a href="#about" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.company.about}</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.company.cases}</a></li>
-                <li><a href="#blog" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.company.blog}</a></li>
-                <li><a href="#contact" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.company.contact}</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-white font-bold mb-6">{dict.footer.legal_title}</h3>
-              <ul className="space-y-4">
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.legal.privacy}</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.legal.terms}</a></li>
-                <li><a href="#" className="text-slate-400 hover:text-cyan-400 text-sm transition-colors">{dict.footer.legal.cookies}</a></li>
-              </ul>
-            </div>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4 tracking-tight">Insights & Estrategias</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto mb-8">
+              {lang === 'es' 
+                ? 'Ideas y estrategias accionables sobre diseño, desarrollo web y marketing digital para escalar tu negocio.' 
+                : 'Actionable ideas and strategies on design, web development, and digital marketing to scale your business.'}
+            </p>
+            <Link 
+              href={`/${lang}/blog`}
+              className="inline-flex items-center justify-center px-6 py-3 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 rounded-xl font-bold transition-all hover:scale-105"
+            >
+              {lang === 'es' ? 'Ver todos los artículos' : 'View all articles'} <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
           </div>
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-white/10">
-            <p className="text-slate-500 text-sm font-medium">{dict.footer.rights}</p>
-            <div className="flex items-center gap-4 text-sm text-slate-500">
-              {dict.footer.made_with.split("❤")[0]}<span className="text-red-500">❤</span>{dict.footer.made_with.split("❤")[1]}
-            </div>
-          </div>
+          <BlogCarousel posts={posts} lang={lang as 'es' | 'en'} />
         </div>
-      </footer>
+      </section>
 
-      {/* FLOATING WHATSAPP */}
-      <a 
-        href="https://wa.me/526246220525?text=Hola" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:scale-110 transition-all duration-300 z-50 group"
-        aria-label="Contactar por WhatsApp"
-      >
-        <MessageCircle className="w-7 h-7" />
-        <span className="absolute inset-0 rounded-full border border-white/50 animate-ping pointer-events-none"></span>
-      </a>
+      <Footer lang={lang as 'es' | 'en'} />
     </div>
   )
 }
