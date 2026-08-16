@@ -201,6 +201,7 @@ export function ProposalGenerator({ leads, initialLeadId = '' }: { leads: LeadOp
                 <p>Este documento es confidencial y dirigido exclusivamente a su destinatario.</p>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
