@@ -1,58 +1,66 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 import nodemailer from 'nodemailer'
-
-const prisma = new PrismaClient()
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json()
-    const { name, email, company, challenge } = data
+    const body = await request.json()
+    const { name, email, challenge } = body
 
-    // 1. Guardar el Lead en la base de datos (Supabase)
-    const newLead = await prisma.lead.create({
-      data: {
-        name,
-        email,
-        company,
-        challenge,
-      },
-    })
+    if (!name || !email || !challenge) {
+      return NextResponse.json(
+        { error: 'Name, email, and challenge are required' },
+        { status: 400 }
+      )
+    }
 
-    // 2. Enviar el correo usando Titan SMTP
+    // SMTP Configuration
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: true, // true para 465, false para otros
+      port: Number(process.env.SMTP_PORT) || 465,
+      secure: Number(process.env.SMTP_PORT) === 465, // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     })
 
-    await transporter.sendMail({
-      from: `Expertos MKD <${process.env.SMTP_FROM}>`,
-      to: process.env.SMTP_TO,
-      subject: `🔥 Nuevo Lead: ${name} de ${company}`,
-      html: `
-        <h2>Nuevo prospecto recibido desde ExpertosMKD.com</h2>
-        <ul>
-          <li><strong>Nombre:</strong> ${name}</li>
-          <li><strong>Correo:</strong> ${email}</li>
-          <li><strong>Empresa:</strong> ${company}</li>
-        </ul>
-        <h3>Reto / Mensaje:</h3>
-        <p>${challenge}</p>
-        <hr/>
-        <p><small>Este lead ya está guardado automáticamente en tu panel de Supabase (/admin).</small></p>
-      `,
-    })
+    // Email content
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+        <h2 style="color: #06b6d4; margin-bottom: 20px;">Nuevo Lead - ExpertosMKD</h2>
+        
+        <div style="background-color: #f8fafc; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+          <p style="margin: 0 0 10px 0;"><strong>👤 Nombre:</strong> ${name}</p>
+          <p style="margin: 0 0 10px 0;"><strong>✉️ Email:</strong> <a href="mailto:${email}" style="color: #0ea5e9;">${email}</a></p>
+        </div>
+        
+        <h3 style="color: #334155; margin-bottom: 10px;">Reto de Negocio:</h3>
+        <div style="background-color: #f1f5f9; padding: 15px; border-radius: 5px; border-left: 4px solid #06b6d4;">
+          <p style="margin: 0; color: #475569; line-height: 1.5;">${challenge}</p>
+        </div>
+        
+        <p style="font-size: 12px; color: #94a3b8; margin-top: 30px; text-align: center;">
+          Este correo fue enviado automáticamente desde el formulario de contacto de la web de ExpertosMKD.
+        </p>
+      </div>
+    `
 
-    return NextResponse.json({ success: true, lead: newLead }, { status: 200 })
+    const mailOptions = {
+      from: `"ExpertosMKD Web" <${process.env.SMTP_USER}>`,
+      to: process.env.CONTACT_EMAIL || process.env.SMTP_USER,
+      subject: `🔥 Nuevo Lead B2B: ${name}`,
+      replyTo: email,
+      html: htmlContent,
+    }
+
+    // Send email
+    await transporter.sendMail(mailOptions)
+
+    return NextResponse.json({ success: true, message: 'Email sent successfully' })
   } catch (error) {
-    console.error('Error in contact API:', error)
+    console.error('Error sending email:', error)
     return NextResponse.json(
-      { error: 'Internal server error while processing the lead.' },
+      { error: 'Failed to send email' },
       { status: 500 }
     )
   }

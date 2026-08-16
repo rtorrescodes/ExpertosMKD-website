@@ -36,10 +36,19 @@ export async function GET(request: Request) {
   }
 
   try {
+    // Import node-fetch and HttpsProxyAgent dynamically to avoid Edge runtime conflicts if any
+    const fetchWithProxy = (await import('node-fetch')).default
+    const { HttpsProxyAgent } = await import('https-proxy-agent')
+
+    // Webshare proxy details (Los Angeles proxy provided by user)
+    const proxyUrl = 'http://fbgfnpwd:rzhsae1p7jeu@198.23.243.226:6361/'
+    const proxyAgent = new HttpsProxyAgent(proxyUrl)
+
     // LogicBoxes API Call
     const url = `https://httpapi.com/api/domains/available.json?auth-userid=${resellerId}&api-key=${apiKey}&domain-name=${name}&tlds=${tld}`
     
-    const response = await fetch(url, {
+    const response = await fetchWithProxy(url, {
+      agent: proxyAgent,
       headers: {
         'User-Agent': 'ExpertosMKD-Agency-Client/1.0',
         'Accept': 'application/json'
@@ -61,7 +70,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: `Error de API: ${response.status} - ${errorText}` }, { status: response.status })
     }
     
-    const data = await response.json()
+    const data = await response.json() as any
     
     if (data.status === 'ERROR') {
       return NextResponse.json({ error: data.message || 'Error en credenciales o IP no autorizada.' }, { status: 403 })
