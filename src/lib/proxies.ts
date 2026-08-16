@@ -1,26 +1,32 @@
-// Formato de Webshare: IP:PORT:USER:PASS
+// Formato de IP:PORT (sin credenciales)
 const rawProxies = [
-  '198.23.243.226:6361:fbgfnpwd:rzhsae1p7jeu',
-  '31.59.20.176:6754:fbgfnpwd:rzhsae1p7jeu',
-  '31.56.127.193:7684:fbgfnpwd:rzhsae1p7jeu',
-  '45.38.107.97:6014:fbgfnpwd:rzhsae1p7jeu',
-  '198.105.121.200:6462:fbgfnpwd:rzhsae1p7jeu',
-  '64.137.96.74:6641:fbgfnpwd:rzhsae1p7jeu',
-  '38.154.185.97:6370:fbgfnpwd:rzhsae1p7jeu',
-  '84.247.60.125:6095:fbgfnpwd:rzhsae1p7jeu',
-  '142.111.67.146:5611:fbgfnpwd:rzhsae1p7jeu',
-  '191.96.254.138:6185:fbgfnpwd:rzhsae1p7jeu'
+  '198.23.243.226:6361',
+  '31.59.20.176:6754',
+  '31.56.127.193:7684',
+  '45.38.107.97:6014',
+  '198.105.121.200:6462',
+  '64.137.96.74:6641',
+  '38.154.185.97:6370',
+  '84.247.60.125:6095',
+  '142.111.67.146:5611',
+  '191.96.254.138:6185'
 ]
 
 /**
  * Devuelve la URL formateada de un proxy aleatorio de la lista.
- * Útil para rotar proxies en cada petición de scraping o conexión a APIs.
- * Formato de salida: http://USER:PASS@IP:PORT/
+ * Utiliza variables de entorno para las credenciales.
  */
 export function getRandomProxyUrl(): string {
   const randomIndex = Math.floor(Math.random() * rawProxies.length)
   const proxy = rawProxies[randomIndex]
   
-  const [ip, port, user, pass] = proxy.split(':')
+  const [ip, port] = proxy.split(':')
+  const user = process.env.PROXY_USER || ''
+  const pass = process.env.PROXY_PASS || ''
+  
+  if (!user || !pass) {
+    console.warn('PROXY_USER o PROXY_PASS no configurados en las variables de entorno.')
+  }
+  
   return `http://${user}:${pass}@${ip}:${port}/`
 }
