@@ -39,10 +39,10 @@ export async function GET(request: Request) {
     // Import node-fetch and HttpsProxyAgent dynamically to avoid Edge runtime conflicts if any
     const fetchWithProxy = (await import('node-fetch')).default
     const { HttpsProxyAgent } = await import('https-proxy-agent')
-    const { getRandomProxyUrl } = await import('@/lib/proxies')
 
-    // Webshare proxy details (Rotated automatically from list)
-    const proxyUrl = getRandomProxyUrl()
+    // Usamos el proxy fijo de Los Ángeles para el buscador de dominios
+    // (Para no tener que whitelistar 10 IPs en LogicBoxes)
+    const proxyUrl = 'http://fbgfnpwd:rzhsae1p7jeu@198.23.243.226:6361/'
     const proxyAgent = new HttpsProxyAgent(proxyUrl)
 
     // LogicBoxes API Call
