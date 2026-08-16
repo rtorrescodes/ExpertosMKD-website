@@ -19,6 +19,8 @@
     "@tsparticles/react": "^4.3.2",
     "@tsparticles/slim": "^4.3.2",
     "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
+    "date-fns": "^4.4.0",
     "framer-motion": "^13.1.0",
     "html2canvas": "^1.4.1",
     "https-proxy-agent": "^9.1.0",
@@ -35,7 +37,8 @@
     "pdf-lib": "^1.17.1",
     "pg": "^8.22.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "whois-parsed": "^1.0.14"
   },
   "devDependencies": {
     "@prisma/client": "^6.19.3",

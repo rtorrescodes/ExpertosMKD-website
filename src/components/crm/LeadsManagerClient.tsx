@@ -110,12 +110,20 @@ export function LeadsManagerClient({ initialLeads, initialIndustries, currentUse
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <LeadsHeader activeTab={activeTab} industries={industries} />
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors shadow-lg shadow-cyan-500/20"
-        >
-          <Plus className="w-4 h-4" /> Agregar Manual
-        </button>
+        <div className="flex items-center gap-3">
+          <Link 
+            href="/admin/leads/scraper"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white font-medium rounded-lg transition-colors shadow-lg shadow-primary-500/20"
+          >
+            <Search className="w-4 h-4" /> B2B Scraper
+          </Link>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors shadow-lg shadow-cyan-500/20"
+          >
+            <Plus className="w-4 h-4" /> Agregar Manual
+          </button>
+        </div>
       </div>
 
       <div className="glass-card rounded-2xl border border-white/5 overflow-hidden">

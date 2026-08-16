@@ -131,3 +131,109 @@ No devuelvas ningún texto adicional, ni explicaciones, solo el JSON estructurad
     return { success: false, error: error.message }
   }
 }
+import { getRandomProxyUrl } from '@/lib/proxies'
+import * as cheerio from 'cheerio'
+
+export async function mineLeads(state: string, city: string, keyword: string, count: number, currentUserId: string) {
+  if (!process.env.DEEPSEEK_API_KEY) {
+    return { success: false, error: 'DEEPSEEK_API_KEY no está configurada.' }
+  }
+
+  try {
+    const fetchWithProxy = (await import('node-fetch')).default
+    const { HttpsProxyAgent } = await import('https-proxy-agent')
+
+    const proxyUrl = getRandomProxyUrl()
+    const proxyAgent = new HttpsProxyAgent(proxyUrl)
+
+    const searchQuery = keyword + ' en ' + city + ', ' + state + ' contacto telefono correo sitio web'
+    const searchUrl = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(searchQuery)
+
+    const response = await fetchWithProxy(searchUrl, {
+      agent: proxyAgent,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'Accept': 'text/html'
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Error en búsqueda: ' + response.status)
+    }
+
+    const html = await response.text()
+    const $ = cheerio.load(html)
+
+    const searchResults: string[] = []
+    $('.result__body').each((i, el) => {
+      const title = $(el).find('.result__title').text().trim()
+      const snippet = $(el).find('.result__snippet').text().trim()
+      searchResults.push('Titulo: ' + title + '\nDescripción: ' + snippet)
+    })
+
+    if (searchResults.length === 0) return { success: false, error: 'No se encontraron resultados.' }
+
+    const rawData = searchResults.slice(0, 15).join('\n---\n')
+
+    const prompt = 'Eres un minero de datos B2B. A continuación presento resultados crudos. Extrae un máximo de ' + count + ' negocios de categoria: ' + keyword + '. Responde ESTRICTAMENTE un JSON array plano: [{"name":"", "companyName":"", "email":"", "phone":"", "website":"", "state":"' + state + '", "city":"' + city + '"}]. Resultados crudos:\n' + rawData
+
+    const aiResponse = await openai.chat.completions.create({
+      model: 'deepseek-chat',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.1
+    })
+
+    const content = aiResponse.choices[0].message.content || '[]'
+    const cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim()
+    let leads: any[] = []
+    
+    try { leads = JSON.parse(cleanContent) } catch (e) { return { success: false, error: 'Formato IA inválido.' } }
+    if (!Array.isArray(leads) || leads.length === 0) return { success: false, error: 'No se encontraron prospectos válidos.' }
+
+    let industry = await prisma.industry.findFirst({ where: { name: keyword } })
+    if (!industry) industry = await prisma.industry.create({ data: { name: keyword, description: 'Generada' } })
+
+    let addedCount = 0
+    let duplicatesCount = 0
+
+    for (const lead of leads) {
+      if (!lead.companyName) continue
+      const exists = await prisma.lead.findFirst({
+        where: {
+          OR: [
+            { companyName: lead.companyName },
+            { email: lead.email ? lead.email : 'NON_EXISTENT_EMAIL_123' },
+            { phone: lead.phone ? lead.phone : 'NON_EXISTENT_PHONE_123' }
+          ]
+        }
+      })
+
+      if (exists) {
+        duplicatesCount++
+        continue
+      }
+
+      await prisma.lead.create({
+        data: {
+          name: lead.name || 'Prospecto Web',
+          companyName: lead.companyName,
+          email: lead.email || null,
+          phone: lead.phone || null,
+          website: lead.website || null,
+          state: lead.state,
+          city: lead.city,
+          status: 'NEW',
+          source: 'B2B_SCRAPER',
+          industryId: industry.id,
+          assignedToId: currentUserId
+        }
+      })
+      addedCount++
+    }
+
+    return { success: true, added: addedCount, duplicates: duplicatesCount, totalExtracted: leads.length }
+
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}

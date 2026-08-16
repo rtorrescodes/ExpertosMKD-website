@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Building, Mail, MapPin, Globe, Phone, Calendar, CheckCircle2, AlertCircle, Send, StickyNote, Clock, Plus, PhoneCall, Calculator, MessageCircle, Circle, X } from 'lucide-react'
 import { updateLeadStatus, addManualActivity, rateLead } from '@/actions/lead-actions'
+import { createTask } from '@/actions/tasks'
 import { sendDirectEmail } from '@/actions/send-direct-email'
 import { TipTapEditor } from '@/components/crm/TipTapEditor'
 import { useRouter } from 'next/navigation'
@@ -22,6 +23,11 @@ export function LeadProfileClient({ lead: initialLead }: { lead: any }) {
   const [emailContent, setEmailContent] = useState('')
   const [emailTemplate, setEmailTemplate] = useState('blank')
   const [isSendingEmail, setIsSendingEmail] = useState(false)
+
+  // Task Modal State
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+  const [taskForm, setTaskForm] = useState({ title: '', description: '', date: '', time: '', type: 'CALL' })
+  const [isCreatingTask, setIsCreatingTask] = useState(false)
 
   // Demo Templates
   const EMAIL_TEMPLATES = {
@@ -109,6 +115,36 @@ export function LeadProfileClient({ lead: initialLead }: { lead: any }) {
       alert('Error al enviar correo: ' + res.error)
     }
     setIsSendingEmail(false)
+  }
+
+  const handleCreateTask = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!taskForm.title || !taskForm.date || !taskForm.time) return
+    setIsCreatingTask(true)
+    
+    // Convert date and time to Date object
+    const [year, month, day] = taskForm.date.split('-').map(Number)
+    const [hours, minutes] = taskForm.time.split(':').map(Number)
+    const dueDate = new Date(year, month - 1, day, hours, minutes)
+
+    const res = await createTask({
+      title: taskForm.title,
+      description: taskForm.description,
+      dueDate,
+      type: taskForm.type,
+      userId: lead.assignedToId,
+      leadId: lead.id
+    })
+    
+    if (res.success) {
+      setIsTaskModalOpen(false)
+      setTaskForm({ title: '', description: '', date: '', time: '', type: 'CALL' })
+      alert('Tarea programada exitosamente')
+      router.refresh()
+    } else {
+      alert('Error al programar tarea: ' + res.error)
+    }
+    setIsCreatingTask(false)
   }
 
   const handleStatusChange = async (newStatus: string) => {
@@ -243,6 +279,12 @@ export function LeadProfileClient({ lead: initialLead }: { lead: any }) {
           </div>
 
           <div className="space-y-3">
+            <button 
+              onClick={() => setIsTaskModalOpen(true)}
+              className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/20 transition-colors"
+            >
+              <Calendar className="w-4 h-4" /> Agendar Seguimiento
+            </button>
             <Link 
               href={`/admin/proposals?leadId=${lead.id}`}
               className="w-full flex items-center justify-center gap-2 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-medium shadow-lg shadow-cyan-500/20 transition-colors"
@@ -392,6 +434,104 @@ export function LeadProfileClient({ lead: initialLead }: { lead: any }) {
           )}
         </div>
       </div>
+
+      {/* Task Scheduling Modal */}
+      {isTaskModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#0b101e] border border-white/10 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div className="flex justify-between items-center p-4 border-b border-white/5 bg-slate-900/40">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
+                  <Calendar className="w-5 h-5 text-indigo-400" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Agendar Tarea</h2>
+                  <p className="text-xs text-slate-400">Seguimiento con {lead.companyName || lead.name}</p>
+                </div>
+              </div>
+              <button onClick={() => setIsTaskModalOpen(false)} className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors">
+                <X className="w-5 h-5"/>
+              </button>
+            </div>
+            
+            <form onSubmit={handleCreateTask} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Tipo de Tarea</label>
+                <select 
+                  required
+                  value={taskForm.type}
+                  onChange={e => setTaskForm({...taskForm, type: e.target.value})}
+                  className="w-full bg-[#050810] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="CALL">Llamada</option>
+                  <option value="MEETING">Reunión</option>
+                  <option value="EMAIL">Enviar Correo</option>
+                  <option value="TODO">Otra Tarea</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Título / Asunto</label>
+                <input 
+                  required
+                  type="text"
+                  value={taskForm.title}
+                  onChange={e => setTaskForm({...taskForm, title: e.target.value})}
+                  placeholder="Ej. Llamada de descubrimiento"
+                  className="w-full bg-[#050810] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Fecha</label>
+                  <input 
+                    required
+                    type="date"
+                    value={taskForm.date}
+                    onChange={e => setTaskForm({...taskForm, date: e.target.value})}
+                    className="w-full bg-[#050810] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Hora</label>
+                  <input 
+                    required
+                    type="time"
+                    value={taskForm.time}
+                    onChange={e => setTaskForm({...taskForm, time: e.target.value})}
+                    className="w-full bg-[#050810] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Notas Adicionales (Opcional)</label>
+                <textarea 
+                  value={taskForm.description}
+                  onChange={e => setTaskForm({...taskForm, description: e.target.value})}
+                  rows={3}
+                  className="w-full bg-[#050810] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 resize-none"
+                />
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3 border-t border-white/5">
+                <button type="button" onClick={() => setIsTaskModalOpen(false)} className="px-5 py-2.5 text-slate-400 hover:text-white transition-colors text-sm font-medium">
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isCreatingTask}
+                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50 text-sm flex items-center gap-2"
+                >
+                  <Calendar className="w-4 h-4" />
+                  {isCreatingTask ? 'Agendando...' : 'Agendar Tarea'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Email Composer Modal */}
       {isEmailModalOpen && (

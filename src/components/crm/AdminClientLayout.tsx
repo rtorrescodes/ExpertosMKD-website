@@ -12,7 +12,8 @@ import {
   Search,
   Bell,
   Menu,
-  Mail
+  Mail,
+  Calendar
 } from 'lucide-react'
 import { useState } from 'react'
 export function AdminClientLayout({ children }: { children: React.ReactNode }) {
@@ -29,6 +30,7 @@ export function AdminClientLayout({ children }: { children: React.ReactNode }) {
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Bandeja Inbox', href: '/admin/inbox', icon: Mail },
     { name: 'Prospectos', href: '/admin/leads', icon: Users },
+    { name: 'Calendario y Tareas', href: '/admin/tasks', icon: Calendar },
     { name: 'Generador de Propuestas', href: '/admin/proposals', icon: FileText },
     { name: 'Configuración', href: '/admin/settings', icon: Settings },
   ]

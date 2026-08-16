@@ -51,6 +51,7 @@ model User {
   // CRM Relations
   leads         Lead[]
   templates     Template[]
+  tasks         Task[]
 }
 
 model VerificationToken {
@@ -116,6 +117,7 @@ model Lead {
   assignedToId  String?
   assignedTo    User?       @relation(fields: [assignedToId], references: [id])
   activities    Activity[]
+  tasks         Task[]
 }
 
 model Template {
@@ -141,4 +143,22 @@ model Activity {
   
   leadId      String
   lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  dueDate     DateTime
+  type        String   // "CALL", "MEETING", "EMAIL", "TODO"
+  status      String   @default("PENDING") // "PENDING", "COMPLETED", "CANCELLED"
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  leadId      String?
+  lead        Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
 }
