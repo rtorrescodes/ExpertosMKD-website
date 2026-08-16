@@ -4,7 +4,7 @@ import { simpleParser } from 'mailparser'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: Request) {
-  // En producción, aquí deberías verificar un header de autorización cron (ej. Vercel CRON_SECRET)
+  // En producción, aquí deberías verificar un header de autorización cron (ej. de Google Cloud Scheduler)
   
   const client = new ImapFlow({
     host: 'imap.titan.email',
