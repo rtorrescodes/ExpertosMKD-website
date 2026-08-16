@@ -1,10 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Send, Loader2, CheckCircle } from 'lucide-react'
 
 export default function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  useEffect(() => {
+    const handleReserve = (e: any) => {
+      const domain = e.detail;
+      const challengeEl = document.getElementById('challenge') as HTMLTextAreaElement;
+      if (challengeEl) {
+        challengeEl.value = `Me interesa reservar el dominio: ${domain}`;
+      }
+    };
+    window.addEventListener('reserve-domain', handleReserve);
+    return () => window.removeEventListener('reserve-domain', handleReserve);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()

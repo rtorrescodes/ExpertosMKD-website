@@ -105,9 +105,15 @@ export default function DomainSearch({ dict }: { dict: DomainSearchDict }) {
                   <p className="text-sm">{dict.available}</p>
                 </div>
               </div>
-              <a href="#contact" className="w-full md:w-auto px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-colors text-center shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+              <button 
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('reserve-domain', { detail: domain }));
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full md:w-auto px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-colors text-center shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+              >
                 {dict.cta_reserve}
-              </a>
+              </button>
             </div>
           )}
 

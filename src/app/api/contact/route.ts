@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, email, challenge } = body
+    const { name, email, company, challenge } = body
 
     if (!name || !email || !challenge) {
       return NextResponse.json(
@@ -12,6 +13,18 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
+
+    // Save lead to CRM Database
+    await prisma.lead.create({
+      data: {
+        name,
+        email,
+        companyName: company || name,
+        notes: challenge,
+        source: 'Formulario Web',
+        status: 'NEW'
+      }
+    })
 
     // SMTP Configuration
     const transporter = nodemailer.createTransport({
