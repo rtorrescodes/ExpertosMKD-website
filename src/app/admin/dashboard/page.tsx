@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import { Users, Mail, CheckCircle, TrendingUp } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   // Fetch stats from database
   const totalLeads = await prisma.lead.count()
