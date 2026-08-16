@@ -283,7 +283,7 @@ export const posts: BlogPost[] = [
   },
   {
     slug: 'diseno-invisible-ux-marketing-contenidos',
-    coverImage: '/blog/post-3.jpg',
+    coverImage: '/blog/post-6.jpg',
     author: { 
       name: 'Isabella C.', 
       avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Jocelyn', 
