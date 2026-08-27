@@ -27,8 +27,8 @@ export async function sendProposalEmail(leadId: string, subject: string, htmlCon
       port: Number(process.env.SMTP_PORT) || 465,
       secure: true, // SSL/TLS
       auth: {
-        user: process.env.SMTP_USER || 'rtorres@expertosmkd.com',
-        pass: process.env.SMTP_PASS || 'dSs^qg4pYJe#xd8uaJ0f',
+        user: process.env.SMTP_USER as string,
+        pass: process.env.SMTP_PASS as string,
       },
     })
 
@@ -46,7 +46,7 @@ export async function sendProposalEmail(leadId: string, subject: string, htmlCon
 
     // 4. Enviar Correo
     const info = await transporter.sendMail({
-      from: `"Expertos MKD" <${process.env.SMTP_USER || 'rtorres@expertosmkd.com'}>`,
+      from: `"Expertos MKD" <${process.env.SMTP_USER}>`,
       to: lead.email,
       subject: subject,
       html: emailHtml,

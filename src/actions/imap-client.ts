@@ -25,8 +25,8 @@ const getImapClient = () => {
       rejectUnauthorized: false // Permite conectar a Titan sin problemas de certificado local
     },
     auth: {
-      user: process.env.SMTP_USER || 'rtorres@expertosmkd.com',
-      pass: process.env.SMTP_PASS || 'dSs^qg4pYJe#xd8uaJ0f'
+      user: process.env.SMTP_USER as string,
+      pass: process.env.SMTP_PASS as string
     },
     logger: false,
     connectionTimeout: 10000

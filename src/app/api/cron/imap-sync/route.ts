@@ -12,8 +12,8 @@ export async function GET(request: Request) {
     secure: true,
     tls: { rejectUnauthorized: false },
     auth: {
-      user: process.env.SMTP_USER || 'rtorres@expertosmkd.com',
-      pass: process.env.SMTP_PASS || 'dSs^qg4pYJe#xd8uaJ0f'
+      user: process.env.SMTP_USER as string,
+      pass: process.env.SMTP_PASS as string
     },
     logger: false,
     connectionTimeout: 10000
