@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { EventTypesClient } from "./EventTypesClient";
 
 export default async function EventTypesPage(props: {
-  const { tenant } = await props.params; params: Promise<{ tenant: string }> }) {
+  params: Promise<{ tenant: string }> }) {
+  const { tenant } = await props.params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.tenantId) redirect("/admin/login");
 

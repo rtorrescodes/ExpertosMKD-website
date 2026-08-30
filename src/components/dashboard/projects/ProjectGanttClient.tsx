@@ -60,10 +60,10 @@ export function ProjectGanttClient({ project }: { project: any }) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col h-[600px] overflow-hidden">
+    <div className="glass-card border-white/5 border border-white/10 rounded-lg shadow-sm flex flex-col h-[600px] overflow-hidden">
       
       {/* Legend */}
-      <div className="p-4 border-b border-gray-200 flex gap-4 text-xs font-medium text-gray-600 bg-gray-50">
+      <div className="p-4 border-b border-white/10 flex gap-4 text-xs font-medium text-slate-400 bg-white/5">
         <div className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-gray-400"></span> Por Hacer</div>
         <div className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-blue-500"></span> En Progreso</div>
         <div className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-yellow-500"></span> En Revisión</div>
@@ -73,17 +73,17 @@ export function ProjectGanttClient({ project }: { project: any }) {
       <div className="flex-1 flex overflow-auto">
         
         {/* Left Pane (Task List Sticky) */}
-        <div className="w-64 flex-shrink-0 border-r border-gray-200 bg-white sticky left-0 z-20 flex flex-col">
-          <div className="h-12 border-b border-gray-200 bg-gray-50 flex items-center px-4 font-semibold text-sm text-gray-700">
+        <div className="w-64 flex-shrink-0 border-r border-white/10 glass-card border-white/5 sticky left-0 z-20 flex flex-col">
+          <div className="h-12 border-b border-white/10 bg-white/5 flex items-center px-4 font-semibold text-sm text-slate-300">
             Tareas
           </div>
           <div className="flex-1 overflow-y-hidden">
             {tasks.map((task: any) => (
-              <div key={task.id} className="h-12 border-b border-gray-100 flex items-center px-4 text-sm text-gray-900 truncate hover:bg-gray-50" title={task.title}>
+              <div key={task.id} className="h-12 border-b border-gray-100 flex items-center px-4 text-sm text-white truncate hover:bg-white/5" title={task.title}>
                 {task.title}
               </div>
             ))}
-            {tasks.length === 0 && <div className="p-4 text-sm text-gray-500">No hay tareas. Crea una desde la vista Kanban.</div>}
+            {tasks.length === 0 && <div className="p-4 text-sm text-slate-400">No hay tareas. Crea una desde la vista Kanban.</div>}
           </div>
         </div>
 
@@ -92,12 +92,12 @@ export function ProjectGanttClient({ project }: { project: any }) {
           
           {/* Header (Dates) */}
           <div 
-            className="h-12 border-b border-gray-200 bg-gray-50 sticky top-0 z-10 grid" 
+            className="h-12 border-b border-white/10 bg-white/5 sticky top-0 z-10 grid" 
             style={{ gridTemplateColumns: `repeat(${totalDays}, minmax(40px, 1fr))` }}
           >
             {datesArray.map((d, i) => (
-              <div key={i} className="flex flex-col items-center justify-center border-r border-gray-200/50 text-xs text-gray-500">
-                <span className="font-semibold text-gray-800">{format(d, "d")}</span>
+              <div key={i} className="flex flex-col items-center justify-center border-r border-white/10/50 text-xs text-slate-400">
+                <span className="font-semibold text-slate-200">{format(d, "d")}</span>
                 <span className="text-[10px]">{format(d, "MMM", {locale: es})}</span>
               </div>
             ))}

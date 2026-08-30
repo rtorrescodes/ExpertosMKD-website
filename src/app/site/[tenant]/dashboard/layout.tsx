@@ -31,7 +31,7 @@ export default async function TenantDashboardLayout(props: {
     // Si es un Super Admin que está viendo, podríamos permitirlo (para el futuro).
     // Por ahora, forzamos la identidad estricta.
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50 text-red-600">
+      <div className="flex h-screen items-center justify-center bg-[#01040f] text-red-400">
         <h1>403 - Acceso Denegado: No perteneces a esta organización.</h1>
       </div>
     );

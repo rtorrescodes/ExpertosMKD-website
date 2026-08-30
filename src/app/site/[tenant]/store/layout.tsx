@@ -19,14 +19,14 @@ export default async function StoreLayout(props: {
 
   return (
     <StoreCartProvider tenantSubdomain={tenant}>
-      <div className="min-h-screen bg-white text-gray-900 font-sans">
+      <div className="min-h-screen glass-card border-white/5 text-white font-sans">
         {/* Navigation Bar */}
-        <header className="border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-50">
+        <header className="border-b border-gray-100 sticky top-0 glass-card border-white/5/80 backdrop-blur-md z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <Link href={`/site/${tenant}/store`} className="font-bold text-xl tracking-tight">
-              {tenantData.name} <span className="text-gray-400 font-normal">Store</span>
+              {tenantData.name} <span className="text-slate-500 font-normal">Store</span>
             </Link>
-            <Link href={`/site/${tenant}/store/checkout`} className="flex items-center gap-2 hover:bg-gray-50 px-3 py-2 rounded-md transition-colors relative group">
+            <Link href={`/site/${tenant}/store/checkout`} className="flex items-center gap-2 hover:bg-white/5 px-3 py-2 rounded-md transition-colors relative group">
               <ShoppingBag className="w-5 h-5" />
               <span className="text-sm font-medium">Cart</span>
             </Link>

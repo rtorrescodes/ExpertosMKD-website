@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { ProjectsListClient } from "@/components/dashboard/projects/ProjectsListClient";
 
 export default async function ProjectsDashboard(props: {
-  const { tenant } = await props.params; params: Promise<{ tenant: string }> }) {
+  params: Promise<{ tenant: string }> }) {
+  const { tenant } = await props.params;
   const session = await getServerSession(authOptions);
   if (!session?.user?.tenantId) redirect("/admin/login");
 

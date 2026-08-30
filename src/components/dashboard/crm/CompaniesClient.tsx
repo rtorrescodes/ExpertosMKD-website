@@ -40,8 +40,8 @@ export function CompaniesClient({ companies }: { companies: any[] }) {
     <div>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">Empresas (Cuentas)</h1>
-          <p className="mt-2 text-sm text-gray-700">
+          <h1 className="text-base font-semibold leading-6 text-white">Empresas (Cuentas)</h1>
+          <p className="mt-2 text-sm text-slate-300">
             Gestiona todas las empresas u organizaciones con las que haces negocios.
           </p>
         </div>
@@ -49,7 +49,7 @@ export function CompaniesClient({ companies }: { companies: any[] }) {
           <button
             onClick={() => setIsModalOpen(true)}
             type="button"
-            className="flex items-center gap-2 rounded-md bg-black px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-800"
+            className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40"
           >
             <Plus className="h-4 w-4" />
             Nueva Empresa
@@ -61,52 +61,52 @@ export function CompaniesClient({ companies }: { companies: any[] }) {
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white/10">
+                <thead className="bg-white/5">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6">
                       Nombre de la Empresa
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                       Dominio
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                       Ingresos Anuales
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                       Creado en
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
+                <tbody className="divide-y divide-white/5 glass-card border-white/5">
                   {companies.map((company) => (
-                    <tr key={company.id} className="hover:bg-gray-50 cursor-pointer">
+                    <tr key={company.id} className="hover:bg-white/5 cursor-pointer">
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                         <div className="flex items-center">
-                          <div className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-400">
+                          <div className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-md border border-white/10 glass-card border-white/5 text-slate-500">
                             <Building2 className="h-4 w-4" />
                           </div>
-                          <div className="ml-4 font-medium text-gray-900">{company.name}</div>
+                          <div className="ml-4 font-medium text-white">{company.name}</div>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-400">
                         {company.domain ? (
                           <a href={`https://${company.domain}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
                             {company.domain}
                           </a>
                         ) : "-"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-400">
                         {company.annualRevenue ? `$${company.annualRevenue.toLocaleString()}` : "-"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-400">
                         {format(new Date(company.createdAt), "MMM d, yyyy")}
                       </td>
                     </tr>
                   ))}
                   {companies.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-sm text-gray-500">
+                      <td colSpan={4} className="py-8 text-center text-sm text-slate-400">
                         Aún no tienes empresas registradas.
                       </td>
                     </tr>
@@ -120,59 +120,59 @@ export function CompaniesClient({ companies }: { companies: any[] }) {
 
       {isModalOpen && (
         <div className="relative z-50">
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsModalOpen(false)}></div>
+          <div className="fixed inset-0 bg-white/50 bg-opacity-75 transition-opacity" onClick={() => setIsModalOpen(false)}></div>
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <div className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <div className="relative transform overflow-hidden rounded-lg glass-card border-white/5 px-4 pb-4 pt-5 text-left shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <h3 className="text-lg font-semibold leading-6 text-gray-900">Crear Empresa</h3>
+                  <h3 className="text-lg font-semibold leading-6 text-white">Crear Empresa</h3>
                   {error && <p className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded">{error}</p>}
                   <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Nombre</label>
-                      <input required type="text" name="name" className="mt-1 block w-full rounded-md border p-2 text-sm border-gray-300" />
+                      <label className="block text-sm font-medium text-slate-300">Nombre</label>
+                      <input required type="text" name="name" className="mt-1 block w-full rounded-md border p-2 text-sm border-white/10" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Dominio web</label>
+                      <label className="block text-sm font-medium text-slate-300">Dominio web</label>
                       <div className="relative mt-1 rounded-md shadow-sm">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <Globe className="h-4 w-4 text-gray-400" />
+                          <Globe className="h-4 w-4 text-slate-500" />
                         </div>
-                        <input type="text" name="domain" placeholder="agencia.com" className="block w-full rounded-md border p-2 pl-10 text-sm border-gray-300" />
+                        <input type="text" className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" name="domain" placeholder="agencia.com" className="block w-full rounded-md border p-2 pl-10 text-sm border-white/10" />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">LinkedIn URL</label>
+                      <label className="block text-sm font-medium text-slate-300">LinkedIn URL</label>
                       <div className="relative mt-1 rounded-md shadow-sm">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <Link className="h-4 w-4 text-gray-400" />
+                          <Link className="h-4 w-4 text-slate-500" />
                         </div>
-                        <input type="url" name="linkedin" className="block w-full rounded-md border p-2 pl-10 text-sm border-gray-300" />
+                        <input type="url" name="linkedin" className="block w-full rounded-md border p-2 pl-10 text-sm border-white/10" />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Ingresos Anuales (USD)</label>
+                      <label className="block text-sm font-medium text-slate-300">Ingresos Anuales (USD)</label>
                       <div className="relative mt-1 rounded-md shadow-sm">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <DollarSign className="h-4 w-4 text-gray-400" />
+                          <DollarSign className="h-4 w-4 text-slate-500" />
                         </div>
-                        <input type="number" name="annualRevenue" className="block w-full rounded-md border p-2 pl-10 text-sm border-gray-300" />
+                        <input type="number" className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" name="annualRevenue" className="block w-full rounded-md border p-2 pl-10 text-sm border-white/10" />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Dirección</label>
+                      <label className="block text-sm font-medium text-slate-300">Dirección</label>
                       <div className="relative mt-1 rounded-md shadow-sm">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <MapPin className="h-4 w-4 text-gray-400" />
+                          <MapPin className="h-4 w-4 text-slate-500" />
                         </div>
-                        <input type="text" name="address" className="block w-full rounded-md border p-2 pl-10 text-sm border-gray-300" />
+                        <input type="text" className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" name="address" className="block w-full rounded-md border p-2 pl-10 text-sm border-white/10" />
                       </div>
                     </div>
                     <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                      <button disabled={isSubmitting} type="submit" className="inline-flex w-full justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 sm:col-start-2 disabled:opacity-50">
+                      <button disabled={isSubmitting} type="submit" className="inline-flex w-full justify-center rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40 sm:col-start-2 disabled:opacity-50">
                         {isSubmitting ? "Guardando..." : "Guardar"}
                       </button>
-                      <button onClick={() => setIsModalOpen(false)} type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0">
+                      <button onClick={() => setIsModalOpen(false)} type="button" className="mt-3 inline-flex w-full justify-center rounded-md glass-card border-white/5 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white/10 hover:bg-white/5 sm:col-start-1 sm:mt-0">
                         Cancelar
                       </button>
                     </div>

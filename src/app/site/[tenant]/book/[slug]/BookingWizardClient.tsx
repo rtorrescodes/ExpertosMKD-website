@@ -73,8 +73,8 @@ export function BookingWizardClient({ tenantSubdomain, eventSlug }: { tenantSubd
     return (
       <div className="flex flex-col items-center justify-center h-full text-center space-y-4 fade-in">
         <CheckCircle className="w-16 h-16 text-green-500" />
-        <h2 className="text-2xl font-bold text-gray-900">¡Cita Confirmada!</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-white">¡Cita Confirmada!</h2>
+        <p className="text-slate-400">
           Tu cita ha sido agendada para el <strong>{selectedDate}</strong> a las <strong>{selectedTime}</strong>.<br />
           Te hemos enviado los detalles a tu correo electrónico.
         </p>
@@ -85,36 +85,36 @@ export function BookingWizardClient({ tenantSubdomain, eventSlug }: { tenantSubd
   return (
     <div className="h-full flex flex-col">
       {/* Header Steps */}
-      <div className="flex items-center text-sm font-medium text-gray-500 mb-8 border-b pb-4">
-        <button onClick={() => setStep(1)} className={`${step >= 1 ? 'text-black' : ''}`}>Fecha</button>
+      <div className="flex items-center text-sm font-medium text-slate-400 mb-8 border-b pb-4">
+        <button onClick={() => setStep(1)} className={`${step >= 1 ? 'text-white' : ''}`}>Fecha</button>
         <ChevronRight className="w-4 h-4 mx-2" />
-        <span className={`${step >= 2 ? 'text-black' : ''}`}>Hora</span>
+        <span className={`${step >= 2 ? 'text-white' : ''}`}>Hora</span>
         <ChevronRight className="w-4 h-4 mx-2" />
-        <span className={`${step >= 3 ? 'text-black' : ''}`}>Datos</span>
+        <span className={`${step >= 3 ? 'text-white' : ''}`}>Datos</span>
       </div>
 
       <div className="flex-1">
         {step === 1 && (
           <div className="space-y-6 fade-in">
-            <h3 className="text-lg font-semibold text-gray-900">Selecciona una fecha</h3>
+            <h3 className="text-lg font-semibold text-white">Selecciona una fecha</h3>
             <div className="max-w-xs">
               <input 
                 type="date" 
                 min={new Date().toISOString().split("T")[0]}
                 value={selectedDate}
                 onChange={handleDateSelect}
-                className="w-full border-gray-300 rounded-md p-3 text-lg focus:ring-black focus:border-black shadow-sm"
+                className="w-full border-white/10 rounded-md p-3 text-lg focus:ring-black focus:border-cyan-400 focus:ring-cyan-400 shadow-sm"
               />
             </div>
-            {isLoadingSlots && <p className="text-sm text-gray-500 animate-pulse">Buscando horarios...</p>}
+            {isLoadingSlots && <p className="text-sm text-slate-400 animate-pulse">Buscando horarios...</p>}
           </div>
         )}
 
         {step === 2 && (
           <div className="space-y-6 fade-in">
             <div className="flex items-center gap-2 mb-4">
-              <button onClick={() => setStep(1)} className="p-2 hover:bg-gray-100 rounded-full"><ArrowLeft className="w-4 h-4" /></button>
-              <h3 className="text-lg font-semibold text-gray-900">Horarios para {selectedDate}</h3>
+              <button onClick={() => setStep(1)} className="p-2 hover:bg-white/10 rounded-full"><ArrowLeft className="w-4 h-4" /></button>
+              <h3 className="text-lg font-semibold text-white">Horarios para {selectedDate}</h3>
             </div>
             
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2">
@@ -122,12 +122,12 @@ export function BookingWizardClient({ tenantSubdomain, eventSlug }: { tenantSubd
                 <button
                   key={time}
                   onClick={() => handleTimeSelect(time)}
-                  className="py-3 border border-gray-200 rounded-md text-sm font-medium hover:border-black hover:bg-black hover:text-white transition-colors"
+                  className="py-3 border border-white/10 rounded-md text-sm font-medium hover:border-cyan-400 hover:bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 hover:text-white transition-colors"
                 >
                   {time}
                 </button>
               )) : (
-                <p className="col-span-4 text-gray-500 text-sm">No hay horarios disponibles para esta fecha.</p>
+                <p className="col-span-4 text-slate-400 text-sm">No hay horarios disponibles para esta fecha.</p>
               )}
             </div>
           </div>
@@ -136,26 +136,26 @@ export function BookingWizardClient({ tenantSubdomain, eventSlug }: { tenantSubd
         {step === 3 && (
           <div className="space-y-6 fade-in">
             <div className="flex items-center gap-2 mb-4">
-              <button onClick={() => setStep(2)} className="p-2 hover:bg-gray-100 rounded-full"><ArrowLeft className="w-4 h-4" /></button>
-              <h3 className="text-lg font-semibold text-gray-900">Tus datos</h3>
+              <button onClick={() => setStep(2)} className="p-2 hover:bg-white/10 rounded-full"><ArrowLeft className="w-4 h-4" /></button>
+              <h3 className="text-lg font-semibold text-white">Tus datos</h3>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 max-w-sm">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Nombre completo</label>
-                <input required type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 p-2 border shadow-sm focus:border-black focus:ring-black sm:text-sm" />
+                <label className="block text-sm font-medium text-slate-300">Nombre completo</label>
+                <input required type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="mt-1 block w-full rounded-md border-white/10 p-2 border shadow-sm focus:border-cyan-400 focus:ring-cyan-400 focus:ring-black sm:text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Correo electrónico</label>
-                <input required type="email" value={customerEmail} onChange={e => setCustomerEmail(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 p-2 border shadow-sm focus:border-black focus:ring-black sm:text-sm" />
+                <label className="block text-sm font-medium text-slate-300">Correo electrónico</label>
+                <input required type="email" value={customerEmail} onChange={e => setCustomerEmail(e.target.value)} className="mt-1 block w-full rounded-md border-white/10 p-2 border shadow-sm focus:border-cyan-400 focus:ring-cyan-400 focus:ring-black sm:text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Teléfono (Opcional)</label>
-                <input type="tel" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 p-2 border shadow-sm focus:border-black focus:ring-black sm:text-sm" />
+                <label className="block text-sm font-medium text-slate-300">Teléfono (Opcional)</label>
+                <input type="tel" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="mt-1 block w-full rounded-md border-white/10 p-2 border shadow-sm focus:border-cyan-400 focus:ring-cyan-400 focus:ring-black sm:text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Notas Adicionales</label>
-                <textarea rows={2} placeholder="¿Hay algo que debamos saber?" value={notes} onChange={e => setNotes(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 p-2 border shadow-sm focus:border-black focus:ring-black sm:text-sm"></textarea>
+                <label className="block text-sm font-medium text-slate-300">Notas Adicionales</label>
+                <textarea className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" rows={2} placeholder="¿Hay algo que debamos saber?" value={notes} onChange={e => setNotes(e.target.value)} className="mt-1 block w-full rounded-md border-white/10 p-2 border shadow-sm focus:border-cyan-400 focus:ring-cyan-400 focus:ring-black sm:text-sm"></textarea>
               </div>
               
               {errorMsg && <p className="text-red-600 text-sm">{errorMsg}</p>}
@@ -163,7 +163,7 @@ export function BookingWizardClient({ tenantSubdomain, eventSlug }: { tenantSubd
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="w-full bg-black text-white rounded-md py-3 font-semibold hover:bg-gray-800 disabled:opacity-50 transition-colors mt-4"
+                className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 text-white rounded-md py-3 font-semibold hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40 disabled:opacity-50 transition-colors mt-4"
               >
                 {isSubmitting ? "Confirmando..." : "Confirmar Cita"}
               </button>

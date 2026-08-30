@@ -34,9 +34,9 @@ export function UsersTable({
       case "OWNER":
         return "bg-purple-100 text-purple-800";
       case "ADMIN":
-        return "bg-blue-100 text-blue-800";
+        return "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-white/10 text-slate-200";
     }
   };
 
@@ -71,19 +71,19 @@ export function UsersTable({
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-white/5">
                 <tr>
-                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6">
                     Usuario
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                     Rol
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                     Estado
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                     Agregado
                   </th>
                   {canManage && (
@@ -93,30 +93,30 @@ export function UsersTable({
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody className="divide-y divide-white/5 glass-card border-white/5">
                 {users.map((person) => (
                   <tr key={person.id}>
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                       <div className="flex items-center">
                         <div className="h-10 w-10 flex-shrink-0">
-                          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-500">
+                          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/50">
                             <span className="text-sm font-medium leading-none text-white">
                               {person.name ? person.name.charAt(0).toUpperCase() : person.email.charAt(0).toUpperCase()}
                             </span>
                           </span>
                         </div>
                         <div className="ml-4">
-                          <div className="font-medium text-gray-900">{person.name || "Sin nombre"}</div>
-                          <div className="text-gray-500">{person.email}</div>
+                          <div className="font-medium text-white">{person.name || "Sin nombre"}</div>
+                          <div className="text-slate-400">{person.email}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-400">
                       <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${getRoleBadgeColor(person.role)}`}>
                         {person.role}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-400">
                       {person.emailVerified ? (
                         <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                           Verificado
@@ -127,7 +127,7 @@ export function UsersTable({
                         </span>
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-400">
                       -
                     </td>
                     {canManage && (
@@ -136,7 +136,7 @@ export function UsersTable({
                           <button
                             type="button"
                             onClick={() => toggleDropdown(person.id)}
-                            className="flex items-center p-2 text-gray-400 hover:text-gray-600"
+                            className="flex items-center p-2 text-slate-500 hover:text-slate-400"
                           >
                             <span className="sr-only">Abrir opciones</span>
                             <MoreVertical className="h-5 w-5" aria-hidden="true" />
@@ -148,25 +148,25 @@ export function UsersTable({
                                 className="fixed inset-0 z-10"
                                 onClick={() => setOpenDropdownId(null)}
                               ></div>
-                              <div className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                              <div className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-md glass-card border-white/5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div className="py-1">
                                   {person.role !== "OWNER" && (
                                     <>
                                       {person.role !== "ADMIN" && (
                                         <button
                                           onClick={() => handleUpdateRole(person.id, person.role, "ADMIN")}
-                                          className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                          className="group flex w-full items-center px-4 py-2 text-sm text-slate-300 hover:bg-white/10"
                                         >
-                                          <Shield className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
+                                          <Shield className="mr-3 h-4 w-4 text-slate-500 group-hover:text-slate-400" />
                                           Hacer Admin
                                         </button>
                                       )}
                                       {person.role !== "MEMBER" && (
                                         <button
                                           onClick={() => handleUpdateRole(person.id, person.role, "MEMBER")}
-                                          className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                          className="group flex w-full items-center px-4 py-2 text-sm text-slate-300 hover:bg-white/10"
                                         >
-                                          <UserIcon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
+                                          <UserIcon className="mr-3 h-4 w-4 text-slate-500 group-hover:text-slate-400" />
                                           Hacer Miembro
                                         </button>
                                       )}
@@ -180,7 +180,7 @@ export function UsersTable({
                                     </>
                                   )}
                                   {person.role === "OWNER" && (
-                                    <div className="px-4 py-2 text-xs text-gray-500">
+                                    <div className="px-4 py-2 text-xs text-slate-400">
                                       Opciones bloqueadas para el Owner
                                     </div>
                                   )}

@@ -57,16 +57,19 @@ export function TenantSidebar({
   links.push({ name: "Configuración", href: `/site/${tenantSubdomain}/dashboard/settings`, icon: Settings });
 
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">
-      <div className="flex h-16 shrink-0 items-center">
-        <span className="text-xl font-bold text-white tracking-tight truncate">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto glass-card border-r border-white/5 h-full px-6 pb-4">
+      <div className="flex h-16 shrink-0 items-center gap-3 border-b border-white/5">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20">
+          {tenantName.charAt(0).toUpperCase()}
+        </div>
+        <span className="text-sm font-bold text-white tracking-wide truncate">
           {tenantName}
         </span>
       </div>
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
-            <ul role="list" className="-mx-2 space-y-1">
+            <ul role="list" className="-mx-2 space-y-2">
               {links.map((item) => {
                 const isActive = pathname.endsWith(item.href);
                 return (
@@ -74,14 +77,14 @@ export function TenantSidebar({
                     <Link
                       href={item.href}
                       className={`
-                        group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold
+                        group flex gap-x-3 rounded-xl px-4 py-3 text-sm leading-6 font-medium transition-all duration-200
                         ${isActive 
-                          ? "bg-gray-800 text-white" 
-                          : "text-gray-400 hover:text-white hover:bg-gray-800"
+                          ? "bg-cyan-500/10 text-cyan-400" 
+                          : "text-slate-400 hover:text-white hover:bg-white/5"
                         }
                       `}
                     >
-                      <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+                      <item.icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-cyan-400' : 'text-slate-500 group-hover:text-white'}`} aria-hidden="true" />
                       {item.name}
                     </Link>
                   </li>

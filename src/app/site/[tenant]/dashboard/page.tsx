@@ -36,10 +36,10 @@ export default async function TenantDashboardPage({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        <h2 className="text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight">
           Bienvenido a {tenant?.name}
         </h2>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-slate-400">
           Resumen general de tu plataforma.
         </p>
       </div>
@@ -68,16 +68,16 @@ export default async function TenantDashboardPage({
 
       {/* Recent Activity */}
       <div>
-        <h3 className="text-base font-semibold leading-6 text-gray-900 mb-4">
+        <h3 className="text-base font-semibold leading-6 text-white mb-4">
           Actividad Reciente
         </h3>
-        <div className="overflow-hidden bg-white shadow sm:rounded-md">
-          <ul role="list" className="divide-y divide-gray-200">
+        <div className="overflow-hidden glass-card border-white/5 shadow sm:rounded-md">
+          <ul role="list" className="divide-y divide-white/5">
             {recentLogs.map((log) => (
               <li key={log.id}>
                 <div className="px-4 py-4 sm:px-6">
                   <div className="flex items-center justify-between">
-                    <p className="truncate text-sm font-medium text-black">
+                    <p className="truncate text-sm font-medium text-white">
                       {log.action}
                     </p>
                     <div className="ml-2 flex flex-shrink-0">
@@ -88,11 +88,11 @@ export default async function TenantDashboardPage({
                   </div>
                   <div className="mt-2 sm:flex sm:justify-between">
                     <div className="sm:flex">
-                      <p className="flex items-center text-sm text-gray-500">
+                      <p className="flex items-center text-sm text-slate-400">
                         {log.user?.name || log.user?.email || "Sistema"}
                       </p>
                     </div>
-                    <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                    <div className="mt-2 flex items-center text-sm text-slate-400 sm:mt-0">
                       <p>
                         {format(new Date(log.createdAt), "MMM d, yyyy HH:mm")}
                       </p>
@@ -103,7 +103,7 @@ export default async function TenantDashboardPage({
             ))}
             {recentLogs.length === 0 && (
               <li>
-                <div className="px-4 py-8 text-center text-sm text-gray-500 sm:px-6">
+                <div className="px-4 py-8 text-center text-sm text-slate-400 sm:px-6">
                   No hay actividad reciente registrada.
                 </div>
               </li>
