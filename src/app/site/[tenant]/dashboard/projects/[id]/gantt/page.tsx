@@ -3,20 +3,19 @@ import { ProjectGanttClient } from "@/components/dashboard/projects/ProjectGantt
 import { notFound } from "next/navigation";
 
 export default async function ProjectGanttPage(props: {
-  const { tenant, id } = await props.params; params: Promise<{ tenant: string, id: string }> }) {
+  params: Promise<{ tenant: string, id: string }>;
+}) {
+  const { tenant, id } = await props.params;
   const project = await prisma.prjProject.findUnique({
     where: { id: id },
     include: {
       tasks: {
-        include: { assignedTo: true, dependsOn: true },
-        orderBy: { startDate: 'asc' } // Basic ordering for Gantt
+        include: { assignedTo: true }
       }
     }
   });
 
   if (!project) notFound();
 
-  return (
-    <ProjectGanttClient project={JSON.parse(JSON.stringify(project))} />
-  );
+  return <ProjectGanttClient tenantSubdomain={tenant} project={JSON.parse(JSON.stringify(project))} />;
 }

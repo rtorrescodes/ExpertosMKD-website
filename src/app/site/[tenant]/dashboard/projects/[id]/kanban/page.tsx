@@ -3,7 +3,9 @@ import { ProjectKanbanClient } from "@/components/dashboard/projects/ProjectKanb
 import { notFound } from "next/navigation";
 
 export default async function ProjectKanbanPage(props: {
-  const { tenant, id } = await props.params; params: Promise<{ tenant: string, id: string }> }) {
+  params: Promise<{ tenant: string, id: string }>;
+}) {
+  const { tenant, id } = await props.params;
   const project = await prisma.prjProject.findUnique({
     where: { id: id },
     include: {
@@ -15,15 +17,5 @@ export default async function ProjectKanbanPage(props: {
 
   if (!project) notFound();
 
-  // Load tenant users for assignment
-  const users = await prisma.user.findMany({
-    where: { tenantId: project.tenantId }
-  });
-
-  return (
-    <ProjectKanbanClient 
-      project={JSON.parse(JSON.stringify(project))} 
-      tenantUsers={JSON.parse(JSON.stringify(users))}
-    />
-  );
+  return <ProjectKanbanClient tenantSubdomain={tenant} project={JSON.parse(JSON.stringify(project))} />;
 }
