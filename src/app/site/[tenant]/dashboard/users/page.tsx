@@ -21,5 +21,10 @@ export default async function UsersPage(props: {
     }
   });
 
-  return <UsersView initialUsers={JSON.parse(JSON.stringify(users))} tenantSubdomain={tenant} />;
+  return (
+    <UsersView 
+      users={JSON.parse(JSON.stringify(users))} 
+      currentUserRole={session.user.role || "MEMBER"} 
+    />
+  );
 }
