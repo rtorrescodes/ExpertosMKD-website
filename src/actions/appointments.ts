@@ -207,3 +207,19 @@ export async function createBooking(data: {
     return { error: error.message || "Error al procesar reserva" };
   }
 }
+export async function updateBookingStatus(bookingId: string, status: string) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.tenantId) throw new Error("No autorizado");
+    
+    await prisma.apptBooking.update({
+      where: { id: bookingId },
+      data: { status }
+    });
+    
+    revalidatePath(/site/[tenant]/dashboard/appointments, "layout");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}

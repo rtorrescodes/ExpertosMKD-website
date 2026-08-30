@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Plus, User as UserIcon } from "lucide-react";
-import { createTask, updateTaskStatus } from "@/actions/projects";
+import { createTask, updateTaskStatus, updateTaskDetails, deleteTask } from "@/actions/projects";
+import { TaskDetailsModal } from "./TaskDetailsModal";
 
 const COLUMNS = [
   { id: "TODO", title: "Por Hacer" },
@@ -16,6 +17,7 @@ export function ProjectKanbanClient({ project, tenantUsers }: { project: any, te
   const [tasks, setTasks] = useState(project.tasks);
   const [isAdding, setIsAdding] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   const handleDragEnd = async (result: any) => {
     if (!result.destination) return;
@@ -48,6 +50,24 @@ export function ProjectKanbanClient({ project, tenantUsers }: { project: any, te
     }
   };
 
+  const handleSaveTaskDetails = async (taskId: string, data: any) => {
+    const res = await updateTaskDetails(taskId, data);
+    if (res.success) {
+      setTasks(tasks.map((t: any) => t.id === taskId ? res.task : t));
+    } else {
+      alert(res.error);
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    const res = await deleteTask(taskId);
+    if (res.success) {
+      setTasks(tasks.filter((t: any) => t.id !== taskId));
+    } else {
+      alert(res.error);
+    }
+  };
+
   return (
     <div className="h-full w-full overflow-x-auto pb-4">
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -75,14 +95,15 @@ export function ProjectKanbanClient({ project, tenantUsers }: { project: any, te
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className={`p-3 mb-3 glass-card border-white/5 border rounded-md shadow-sm select-none transition-shadow ${snapshot.isDragging ? 'shadow-lg border-blue-400' : 'border-white/10 hover:border-white/10'}`}
+                            onClick={() => setSelectedTask(task)}
+                            className={`p-3 mb-3 cursor-pointer border-white/5 border rounded-md shadow-sm select-none transition-shadow ${snapshot.isDragging ? 'shadow-lg border-blue-400' : 'glass-card border-white/10 hover:border-cyan-500/50'}`}
                           >
                             <h4 className="text-sm font-medium text-white">{task.title}</h4>
                             {task.description && <p className="text-xs text-slate-400 mt-1 line-clamp-2">{task.description}</p>}
                             
                             <div className="mt-3 flex justify-between items-center">
                               {task.assignedTo ? (
-                                <div className="h-6 w-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold" title={task.assignedTo.name}>
+                                <div className="h-6 w-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold" title={task.assignedTo.name}>
                                   {task.assignedTo.name?.charAt(0).toUpperCase()}
                                 </div>
                               ) : (
@@ -105,10 +126,10 @@ export function ProjectKanbanClient({ project, tenantUsers }: { project: any, te
                     
                     {isAdding === col.id ? (
                       <div className="mt-2">
-                        <textarea className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500"
+                        <textarea 
                           autoFocus
                           placeholder="Título de la tarea..."
-                          className="w-full text-sm border-white/10 rounded-md p-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          className="w-full text-sm bg-slate-900/60 border border-white/10 text-white placeholder-slate-500 rounded-md p-2 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
                           rows={2}
                           value={newTaskTitle}
                           onChange={(e) => setNewTaskTitle(e.target.value)}
@@ -121,13 +142,13 @@ export function ProjectKanbanClient({ project, tenantUsers }: { project: any, te
                         />
                         <div className="flex justify-end gap-2 mt-2">
                           <button onClick={() => { setIsAdding(null); setNewTaskTitle(""); }} className="text-xs text-slate-400 hover:text-slate-300">Cancelar</button>
-                          <button onClick={() => handleCreateTask(col.id)} className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 font-medium">Guardar</button>
+                          <button onClick={() => handleCreateTask(col.id)} className="text-xs bg-cyan-600 text-white px-2 py-1 rounded hover:bg-cyan-500 font-medium">Guardar</button>
                         </div>
                       </div>
                     ) : (
                       <button 
                         onClick={() => setIsAdding(col.id)}
-                        className="w-full mt-2 flex items-center gap-1 text-slate-400 hover:text-slate-200 text-sm font-medium py-1 px-2 rounded-md hover:bg-white/20 transition-colors"
+                        className="w-full mt-2 flex items-center gap-1 text-slate-400 hover:text-slate-200 text-sm font-medium py-1 px-2 rounded-md hover:bg-white/5 transition-colors"
                       >
                         <Plus className="w-4 h-4" /> Añadir tarea
                       </button>
@@ -139,6 +160,15 @@ export function ProjectKanbanClient({ project, tenantUsers }: { project: any, te
           ))}
         </div>
       </DragDropContext>
+
+      <TaskDetailsModal
+        task={selectedTask}
+        tenantUsers={tenantUsers}
+        isOpen={!!selectedTask}
+        onClose={() => setSelectedTask(null)}
+        onSave={handleSaveTaskDetails}
+        onDelete={handleDeleteTask}
+      />
     </div>
   );
 }

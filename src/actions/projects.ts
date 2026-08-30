@@ -76,3 +76,42 @@ export async function updateTaskStatus(taskId: string, status: string) {
     return { error: error.message };
   }
 }
+export async function updateTaskDetails(taskId: string, data: {
+  title: string;
+  description?: string;
+  priority?: string;
+  assignedToId?: string;
+  startDate?: string;
+  dueDate?: string;
+}) {
+  try {
+    await requireTenantUser();
+    const task = await prisma.prjTask.update({
+      where: { id: taskId },
+      data: {
+        title: data.title,
+        description: data.description || null,
+        priority: data.priority,
+        assignedToId: data.assignedToId || null,
+        startDate: data.startDate ? new Date(data.startDate) : null,
+        dueDate: data.dueDate ? new Date(data.dueDate) : null,
+      },
+      include: { assignedTo: true }
+    });
+    return { success: true, task };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function deleteTask(taskId: string) {
+  try {
+    await requireTenantUser();
+    await prisma.prjTask.delete({
+      where: { id: taskId }
+    });
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}

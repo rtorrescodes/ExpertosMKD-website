@@ -3,7 +3,8 @@ import { authOptions } from "@/lib/auth/auth.config";
 import { prisma } from "@/lib/prisma/client";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Calendar, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
+import { AppointmentsClient } from "@/components/dashboard/appointments/AppointmentsClient";
 
 export default async function AppointmentsDashboard(props: {
   params: Promise<{ tenant: string }>;
@@ -13,25 +14,26 @@ export default async function AppointmentsDashboard(props: {
   
   if (!session?.user?.tenantId) redirect("/admin/login");
 
+  // Fetch upcoming and past bookings for the calendar
   const bookings = await prisma.apptBooking.findMany({
-    where: { tenantId: session.user.tenantId, startTime: { gte: new Date() } },
+    where: { tenantId: session.user.tenantId },
     include: { eventType: true, person: true },
     orderBy: { startTime: "asc" }
   });
 
   return (
     <div>
-      <div className="sm:flex sm:items-center">
+      <div className="sm:flex sm:items-center mb-6">
         <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-white">Agenda de Citas</h1>
-          <p className="mt-2 text-sm text-slate-300">
-            Próximas reservas confirmadas.
+          <h1 className="text-xl font-bold leading-6 text-white">Calendario de Citas</h1>
+          <p className="mt-2 text-sm text-slate-400">
+            Gestiona las reservas de tus clientes en tiempo real.
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 flex gap-3">
           <Link
             href={`/site/${tenant}/dashboard/appointments/event-types`}
-            className="flex items-center gap-2 rounded-md glass-card border-white/5 border px-3 py-2 text-sm font-semibold text-white hover:bg-white/5 shadow-sm"
+            className="flex items-center gap-2 rounded-md glass-card border-white/5 border px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 shadow-sm transition-colors"
           >
             <Settings className="h-4 w-4" />
             Servicios y Horarios
@@ -39,45 +41,7 @@ export default async function AppointmentsDashboard(props: {
         </div>
       </div>
 
-      <div className="mt-8 overflow-hidden glass-card border-white/5 shadow sm:rounded-md">
-        <ul role="list" className="divide-y divide-white/5">
-          {bookings.map((booking) => (
-            <li key={booking.id}>
-              <div className="px-4 py-4 sm:px-6 hover:bg-white/5 transition-colors">
-                <div className="flex items-center justify-between">
-                  <p className="truncate text-sm font-medium text-white">
-                    {booking.eventType.title}
-                  </p>
-                  <div className="ml-2 flex flex-shrink-0">
-                    <p className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${booking.status === 'CONFIRMED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
-                      {booking.status}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-2 sm:flex sm:justify-between">
-                  <div className="sm:flex sm:flex-col">
-                    <p className="flex items-center text-sm text-slate-400">
-                      Cliente: {booking.customerName} ({booking.customerPhone || booking.customerEmail})
-                    </p>
-                    {booking.notes && <p className="text-sm text-slate-500 mt-1">Notas: {booking.notes}</p>}
-                  </div>
-                  <div className="mt-2 flex items-center text-sm text-slate-400 sm:mt-0">
-                    <Calendar className="mr-1.5 h-5 w-5 flex-shrink-0 text-slate-500" aria-hidden="true" />
-                    <p>
-                      {new Date(booking.startTime).toLocaleString('es-MX', { dateStyle: 'long', timeStyle: 'short' })} 
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </li>
-          ))}
-          {bookings.length === 0 && (
-            <li className="px-4 py-8 text-center text-sm text-slate-400">
-              No hay citas próximas programadas.
-            </li>
-          )}
-        </ul>
-      </div>
+      <AppointmentsClient bookings={JSON.parse(JSON.stringify(bookings))} tenantSubdomain={tenant} />
     </div>
   );
 }
