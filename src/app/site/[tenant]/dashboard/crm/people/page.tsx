@@ -5,9 +5,8 @@ import { redirect } from "next/navigation";
 import { PeopleClient } from "@/components/dashboard/crm/PeopleClient";
 
 export default async function PeoplePage({
-  params,
-}: {
-  params: { tenant: string };
+  props: {
+  params: Promise<{ tenant: string }>;
 }) {
   const session = await getServerSession(authOptions);
 

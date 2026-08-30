@@ -5,9 +5,8 @@ import { redirect } from "next/navigation";
 import { CompaniesClient } from "@/components/dashboard/crm/CompaniesClient";
 
 export default async function CompaniesPage({
-  params,
-}: {
-  params: { tenant: string };
+  props: {
+  params: Promise<{ tenant: string }>;
 }) {
   const session = await getServerSession(authOptions);
 

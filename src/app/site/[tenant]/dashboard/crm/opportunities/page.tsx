@@ -5,9 +5,8 @@ import { redirect } from "next/navigation";
 import { OpportunitiesClient } from "@/components/dashboard/crm/OpportunitiesClient";
 
 export default async function OpportunitiesPage({
-  params,
-}: {
-  params: { tenant: string };
+  props: {
+  params: Promise<{ tenant: string }>;
 }) {
   const session = await getServerSession(authOptions);
 

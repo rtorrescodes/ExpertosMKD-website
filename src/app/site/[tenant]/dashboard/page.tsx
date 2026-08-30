@@ -8,9 +8,10 @@ import { format } from "date-fns";
 export default async function TenantDashboardPage({
   params,
 }: {
-  params: { tenant: string };
+  props: { params: Promise<{ tenant: string }> };
 }) {
-  const session = await getServerSession(authOptions);
+  const { tenant } = await props.params;
+ session = await getServerSession(authOptions);
   
   if (!session?.user?.tenantId) return null;
 

@@ -7,9 +7,10 @@ import { redirect } from "next/navigation";
 export default async function UsersPage({
   params,
 }: {
-  params: { tenant: string };
+  props: { params: Promise<{ tenant: string }> };
 }) {
-  const session = await getServerSession(authOptions);
+  const { tenant } = await props.params;
+ session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
     redirect("/admin/login");
