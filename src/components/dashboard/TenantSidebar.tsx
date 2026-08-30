@@ -50,12 +50,6 @@ export function TenantSidebar({
   if (featureFlags?.ecommerce) {
     links.push({ name: "Tienda", href: "/dashboard/ecommerce", icon: ShoppingCart });
   }
-  if (featureFlags?.appointments) {
-    links.push({ name: "Citas", href: "/dashboard/appointments", icon: Calendar });
-  }
-  if (featureFlags?.projects) {
-    links.push({ name: "Proyectos", href: "/dashboard/projects", icon: CheckSquare }); // Consider changing icon
-  }
 
   // Always at the bottom
   links.push({ name: "Configuración", href: "/dashboard/settings", icon: Settings });
