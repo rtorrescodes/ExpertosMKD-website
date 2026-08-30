@@ -187,16 +187,30 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
                     <div>
                       <label className="block text-sm font-medium text-slate-300">Teléfono</label>
                       <div className="relative mt-1 rounded-md shadow-sm">
-                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <Phone className="h-4 w-4 text-slate-500" />
-                        </div>
+                        <input type="text" name="phone" defaultValue={editingPerson?.phone} className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 block w-full rounded-md border p-2 pl-10 text-sm focus:outline-none focus:border-cyan-500" />
+                      </div>
+                    </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300">Cargo / Título</label>
+                      <label className="block text-sm font-medium text-slate-300">Puesto de Trabajo</label>
                       <div className="relative mt-1 rounded-md shadow-sm">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                           <Briefcase className="h-4 w-4 text-slate-500" />
                         </div>
-                        <input type="text" className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" name="jobTitle" className="block w-full rounded-md border p-2 pl-10 text-sm border-white/10" />
+                        <input type="text" name="jobTitle" defaultValue={editingPerson?.jobTitle} className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 block w-full rounded-md border p-2 pl-10 text-sm focus:outline-none focus:border-cyan-500" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300">Empresa (Opcional)</label>
+                      <div className="relative mt-1 rounded-md shadow-sm">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                          <Building2 className="h-4 w-4 text-slate-500" />
+                        </div>
+                        <select name="companyId" defaultValue={editingPerson?.companyId || ""} className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 block w-full rounded-md border p-2 pl-10 text-sm focus:outline-none focus:border-cyan-500">
+                          <option value="">Selecciona una empresa...</option>
+                          {companies.map(c => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                     

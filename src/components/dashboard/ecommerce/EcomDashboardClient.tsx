@@ -1,31 +1,62 @@
 "use client";
-
 import { useState } from "react";
-import { Plus, Package, ShoppingBag, ExternalLink } from "lucide-react";
-import { createProduct } from "@/actions/ecommerce";
+import { Plus, Package, ShoppingBag, ExternalLink, Trash2 } from "lucide-react";
+import { createProduct, updateProduct, deleteProduct } from "@/actions/ecommerce";
 import { useRouter } from "next/navigation";
 
 export function EcomDashboardClient({ tenantSubdomain, products, orders }: { tenantSubdomain: string, products: any[], orders: any[] }) {
   const router = useRouter();
   const [tab, setTab] = useState("PRODUCTS");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
 
-  const handleCreateProduct = async () => {
-    const res = await createProduct({ title, description, price: Number(price), inventoryQuantity: Number(stock) });
-    if (res.success) {
-      setIsModalOpen(false);
+  const openModal = (product?: any) => {
+    if (product) {
+      setEditingProduct(product);
+      setTitle(product.title);
+      setDescription(product.description || "");
+      setPrice(product.variants[0]?.price || 0);
+      setStock(product.variants[0]?.inventoryQuantity || 0);
+    } else {
+      setEditingProduct(null);
       setTitle("");
       setDescription("");
       setPrice(0);
       setStock(0);
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleSaveProduct = async () => {
+    let res;
+    if (editingProduct) {
+      res = await updateProduct(editingProduct.id, { title, description, price: Number(price), inventoryQuantity: Number(stock) });
+    } else {
+      res = await createProduct({ title, description, price: Number(price), inventoryQuantity: Number(stock) });
+    }
+    
+    if (res.success) {
+      setIsModalOpen(false);
       router.refresh();
     } else {
       alert(res.error);
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    if (confirm("¿Estás seguro de que quieres eliminar este producto?")) {
+      const res = await deleteProduct(id);
+      if (res.success) {
+        setIsModalOpen(false);
+        router.refresh();
+      } else {
+        alert(res.error);
+      }
     }
   };
 
@@ -48,7 +79,7 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
             Ver Tienda <ExternalLink className="h-4 w-4" />
           </a>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => openModal()}
             className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40"
           >
             <Plus className="h-4 w-4" />
@@ -79,7 +110,7 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
         {tab === "PRODUCTS" && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {products.map(p => (
-              <div key={p.id} className="border border-white/10 rounded-lg p-4 glass-card border-white/5 shadow-sm flex flex-col justify-between">
+              <div key={p.id} onClick={() => openModal(p)} className="border border-white/10 rounded-lg p-4 glass-card border-white/5 shadow-sm flex flex-col justify-between cursor-pointer hover:border-cyan-500/50 transition-colors">
                 <div>
                   <div className="h-32 bg-white/10 rounded-md mb-4 flex items-center justify-center text-slate-500">
                     <Package className="w-8 h-8" />
@@ -132,32 +163,39 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20/50 p-4">
-          <div className="glass-card border-white/5 rounded-lg p-6 max-w-md w-full shadow-xl">
-            <h3 className="text-lg font-bold mb-4">Añadir Producto</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="glass-card border-white/5 rounded-lg p-6 max-w-md w-full shadow-xl bg-[#0a1526]">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-white">{editingProduct ? "Editar Producto" : "Añadir Producto"}</h3>
+              {editingProduct && (
+                <button onClick={() => handleDeleteProduct(editingProduct.id)} className="text-red-400 hover:text-red-300">
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              )}
+            </div>
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-slate-300">Título</label>
-                <input type="text" className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full border rounded-md p-2 text-sm" placeholder="Ej. Taza Celeritas" />
+                <input type="text" className="bg-[#01040f] border-white/10 text-white placeholder-slate-500 mt-1 w-full border rounded-md p-2 text-sm focus:outline-none focus:border-cyan-500" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej. Taza Celeritas" />
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
                   <label className="text-sm font-medium text-slate-300">Precio Base</label>
-                  <input type="number" className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" value={price} onChange={(e) => setPrice(Number(e.target.value))} className="mt-1 w-full border rounded-md p-2 text-sm" />
+                  <input type="number" className="bg-[#01040f] border-white/10 text-white placeholder-slate-500 mt-1 w-full border rounded-md p-2 text-sm focus:outline-none focus:border-cyan-500" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
                 </div>
                 <div className="flex-1">
                   <label className="text-sm font-medium text-slate-300">Stock Inicial</label>
-                  <input type="number" className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" value={stock} onChange={(e) => setStock(Number(e.target.value))} className="mt-1 w-full border rounded-md p-2 text-sm" />
+                  <input type="number" className="bg-[#01040f] border-white/10 text-white placeholder-slate-500 mt-1 w-full border rounded-md p-2 text-sm focus:outline-none focus:border-cyan-500" value={stock} onChange={(e) => setStock(Number(e.target.value))} />
                 </div>
               </div>
               <div>
                 <label className="text-sm font-medium text-slate-300">Descripción</label>
-                <textarea className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 w-full border rounded-md p-2 text-sm" rows={3}></textarea>
+                <textarea className="bg-[#01040f] border-white/10 text-white placeholder-slate-500 mt-1 w-full border rounded-md p-2 text-sm focus:outline-none focus:border-cyan-500" value={description} onChange={(e) => setDescription(e.target.value)} rows={3}></textarea>
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/10 rounded-md">Cancelar</button>
-              <button onClick={handleCreateProduct} disabled={!title} className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40 rounded-md disabled:opacity-50">Guardar</button>
+              <button onClick={handleSaveProduct} disabled={!title} className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40 rounded-md disabled:opacity-50">Guardar</button>
             </div>
           </div>
         </div>

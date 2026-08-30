@@ -2,27 +2,26 @@
 
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { createOpportunity, updateOpportunityStage } from "@/actions/crm";
-import { Plus, DollarSign, Building2, User as UserIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Plus, DollarSign, Building2, User as UserIcon, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { createOpportunity, updateOpportunityStage, updateOpportunity, deleteOpportunity } from "@/actions/crm";
+import { useRouter } from "next/navigation";
 
 const STAGES = [
-  { id: "NEW", title: "Nuevos" },
-  { id: "CONTACTED", title: "Contactados" },
-  { id: "QUALIFIED", title: "Calificados" },
-  { id: "PROPOSAL", title: "Propuesta" },
-  { id: "WON", title: "Ganados" },
-  { id: "LOST", title: "Perdidos" }
+  { id: "PROSPECT", title: "Prospecto" },
+  { id: "QUALIFIED", title: "Calificado" },
+  { id: "PROPOSAL", title: "Propuesta Enviada" },
+  { id: "NEGOTIATION", title: "En Negociación" },
+  { id: "WON", title: "Cerrado Ganado" },
+  { id: "LOST", title: "Cerrado Perdido" }
 ];
 
 export function OpportunitiesClient({ opportunities, companies, people }: { opportunities: any[]; companies: any[]; people: any[] }) {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Local state for optimistic UI drag and drop
   const [boardData, setBoardData] = useState<Record<string, any[]>>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingOpp, setEditingOpp] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   useEffect(() => {
     const newBoard: Record<string, any[]> = {};
@@ -70,13 +69,26 @@ export function OpportunitiesClient({ opportunities, companies, people }: { oppo
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
-    await createOpportunity({
-      name: formData.get("name") as string,
-      amount: formData.get("amount") ? Number(formData.get("amount")) : undefined,
-      stage: "NEW", // Default stage
-      companyId: formData.get("companyId") as string || undefined,
-      personId: formData.get("personId") as string || undefined,
-    });
+    const companyId = formData.get("companyId") as string;
+    const personId = formData.get("personId") as string;
+
+    let result;
+    if (editingOpp) {
+      result = await updateOpportunity(editingOpp.id, {
+        name: formData.get("name") as string,
+        amount: Number(formData.get("amount")) || undefined,
+        companyId: companyId || undefined,
+        personId: personId || undefined,
+      });
+    } else {
+      result = await createOpportunity({
+        name: formData.get("name") as string,
+        amount: Number(formData.get("amount")) || undefined,
+        stage: "PROSPECT",
+        companyId: companyId || undefined,
+        personId: personId || undefined,
+      });
+    }
 
     setIsSubmitting(false);
     setIsModalOpen(false);
@@ -91,7 +103,7 @@ export function OpportunitiesClient({ opportunities, companies, people }: { oppo
           <p className="mt-2 text-sm text-slate-300">Arrastra y suelta las oportunidades para avanzar en el embudo de ventas.</p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <button onClick={() => setIsModalOpen(true)} type="button" className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40">
+          <button onClick={() => { setEditingOpp(null); setIsModalOpen(true); }} type="button" className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40">
             <Plus className="h-4 w-4" />
             Nueva Oportunidad
           </button>
@@ -127,7 +139,8 @@ export function OpportunitiesClient({ opportunities, companies, people }: { oppo
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`glass-card border-white/5 p-3 rounded shadow-sm border border-white/10 text-sm ${snapshot.isDragging ? "shadow-lg ring-1 ring-black" : ""}`}
+                              onClick={() => { setEditingOpp(opp); setIsModalOpen(true); }}
+                              className={`glass-card border-white/5 p-3 rounded shadow-sm border border-white/10 text-sm cursor-pointer ${snapshot.isDragging ? "shadow-lg ring-1 ring-black" : "hover:border-cyan-500/50"}`}
                             >
                               <div className="font-medium text-white">{opp.name}</div>
                               <div className="text-slate-400 font-semibold mt-1">
@@ -171,11 +184,28 @@ export function OpportunitiesClient({ opportunities, companies, people }: { oppo
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <div className="relative transform overflow-hidden rounded-lg glass-card border-white/5 px-4 pb-4 pt-5 text-left shadow-xl sm:my-8 sm:w-full sm:max-w-md sm:p-6">
-                <h3 className="text-lg font-semibold leading-6 text-white">Nueva Oportunidad</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold leading-6 text-white">{editingOpp ? "Editar Oportunidad" : "Nueva Oportunidad"}</h3>
+                  {editingOpp && (
+                    <button 
+                      type="button" 
+                      onClick={async () => {
+                        if (confirm('¿Eliminar oportunidad?')) {
+                          await deleteOpportunity(editingOpp.id);
+                          setIsModalOpen(false);
+                          router.refresh();
+                        }
+                      }} 
+                      className="text-red-400 hover:text-red-300 transition-colors p-1"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
                 <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-300">Nombre del Negocio</label>
-                    <input required type="text" name="name" className="mt-1 block w-full rounded-md border p-2 text-sm border-white/10" placeholder="Ej. Rediseño web" />
+                    <input required type="text" name="name" defaultValue={editingOpp?.name} className="mt-1 block w-full bg-[#01040f] border-white/10 text-white rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="Ej. Rediseño web" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300">Monto Esperado (USD)</label>
@@ -183,26 +213,26 @@ export function OpportunitiesClient({ opportunities, companies, people }: { oppo
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <DollarSign className="h-4 w-4 text-slate-500" />
                       </div>
-                      <input type="number" className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500" name="amount" className="block w-full rounded-md border p-2 pl-10 text-sm border-white/10" />
+                      <input type="number" defaultValue={editingOpp?.amount} className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 block w-full rounded-md border p-2 pl-10 text-sm focus:outline-none focus:border-cyan-500" name="amount" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300">Empresa Relacionada</label>
-                    <select name="companyId" className="mt-1 block w-full rounded-md border p-2 text-sm border-white/10 glass-card border-white/5">
+                    <select name="companyId" defaultValue={editingOpp?.companyId || ""} className="mt-1 block w-full bg-[#01040f] border-white/10 text-white rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500">
                       <option value="">-- Sin asignar --</option>
                       {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300">Persona Contacto</label>
-                    <select name="personId" className="mt-1 block w-full rounded-md border p-2 text-sm border-white/10 glass-card border-white/5">
+                    <select name="personId" defaultValue={editingOpp?.personId || ""} className="mt-1 block w-full bg-[#01040f] border-white/10 text-white rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500">
                       <option value="">-- Sin asignar --</option>
                       {people.map((p) => <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>)}
                     </select>
                   </div>
                   <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                     <button disabled={isSubmitting} type="submit" className="inline-flex w-full justify-center rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40 sm:col-start-2 disabled:opacity-50">
-                      {isSubmitting ? "Guardando..." : "Crear Oportunidad"}
+                      {isSubmitting ? "Guardando..." : "Guardar"}
                     </button>
                     <button onClick={() => setIsModalOpen(false)} type="button" className="mt-3 inline-flex w-full justify-center rounded-md glass-card border-white/5 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/5 sm:col-start-1">
                       Cancelar

@@ -126,3 +126,38 @@ export async function createOrder(data: {
     return { error: error.message || "Error al procesar la orden" };
   }
 }
+
+export async function updateProduct(id: string, data: { title: string; description?: string; price: number; inventoryQuantity: number; }) {
+  try {
+    const user = await requireTenantUser();
+    await prisma.(async (tx) => {
+      await tx.ecomProduct.updateMany({
+        where: { id, tenantId: user.tenantId! },
+        data: { title: data.title, description: data.description }
+      });
+      // Update default variant
+      const defaultVariant = await tx.ecomVariant.findFirst({ where: { productId: id } });
+      if (defaultVariant) {
+        await tx.ecomVariant.update({
+          where: { id: defaultVariant.id },
+          data: { price: data.price, inventoryQuantity: data.inventoryQuantity }
+        });
+      }
+    });
+    revalidatePath(/site/[tenant]/dashboard/ecommerce, "layout");
+    return { success: true };
+  } catch (error: any) { return { error: error.message }; }
+}
+
+export async function deleteProduct(id: string) {
+  try {
+    const user = await requireTenantUser();
+    // This will cascade delete variants if schema is configured properly, otherwise delete variants first.
+    await prisma.(async (tx) => {
+      await tx.ecomVariant.deleteMany({ where: { productId: id } });
+      await tx.ecomProduct.deleteMany({ where: { id, tenantId: user.tenantId! } });
+    });
+    revalidatePath(/site/[tenant]/dashboard/ecommerce, "layout");
+    return { success: true };
+  } catch (error: any) { return { error: error.message }; }
+}

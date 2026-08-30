@@ -17,5 +17,11 @@ export default async function ProjectKanbanPage(props: {
 
   if (!project) notFound();
 
-  return <ProjectKanbanClient tenantSubdomain={tenant} project={JSON.parse(JSON.stringify(project))} />;
+  // Fetch all users in this tenant to allow assigning tasks
+  const tenantUsers = await prisma.user.findMany({
+    where: { tenant: { subdomain: tenant } },
+    select: { id: true, name: true, email: true }
+  });
+
+  return <ProjectKanbanClient tenantSubdomain={tenant} project={JSON.parse(JSON.stringify(project))} tenantUsers={tenantUsers} />;
 }
