@@ -3,13 +3,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { KanbanSquare, BarChartHorizontal } from "lucide-react";
 
-export default async function ProjectLayout({
-  children,
-  params
-}: {
+export default async function ProjectLayout(props: {
   children: React.ReactNode;
-  params: { tenant: string, id: string };
+  params: Promise<{ tenant: string, id: string }>;
 }) {
+  const { tenant, id } = await props.params;
+
   const project = await prisma.prjProject.findUnique({
     where: { id: id },
   });
@@ -37,7 +36,7 @@ export default async function ProjectLayout({
 
       {/* Main Content (Kanban or Gantt) */}
       <div className="flex-1 overflow-hidden">
-        {children}
+        {props.children}
       </div>
     </div>
   );
