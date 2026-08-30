@@ -26,8 +26,14 @@ export function UsersTable({
   onRemoveUser: (userId: string) => Promise<void>;
 }) {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const canManage = currentUserRole === "OWNER" || currentUserRole === "ADMIN";
+
+  const filteredUsers = users.filter(u => 
+    (u.name && u.name.toLowerCase().includes(searchTerm.toLowerCase())) || 
+    u.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
