@@ -203,6 +203,11 @@ model Tenant {
   erpTransactions ErpTransaction[]
   erpInvoices     ErpInvoice[]
 
+  invSuppliers InvSupplier[]
+  invItems     InvItem[]
+  invMovements InvMovement[]
+  invPurchases InvPurchase[]
+
   @@index([status])
   @@index([subdomain])
 }
@@ -506,6 +511,7 @@ model EcomVariant {
 
   product    EcomProduct     @relation(fields: [productId], references: [id], onDelete: Cascade)
   orderItems EcomOrderItem[]
+  invItem    InvItem?
 }
 
 model EcomOrder {
@@ -608,4 +614,96 @@ model ErpInvoice {
 
   tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   transaction ErpTransaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// MÓDULO DE INVENTARIO (KARDEX)
+// ==========================================
+
+model InvSupplier {
+  id          String  @id @default(cuid())
+  tenantId    String
+  name        String
+  contactName String?
+  email       String?
+  phone       String?
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  purchases InvPurchase[]
+}
+
+model InvItem {
+  id       String  @id @default(cuid())
+  tenantId String
+  name     String
+  sku      String?
+  barcode  String?
+
+  currentStock  Int     @default(0)
+  minStockAlert Int     @default(5)
+  unitCost      Decimal @default(0) // Costo promedio o de última compra
+
+  // Soft link al Ecommerce
+  ecomVariantId String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  ecomVariant   EcomVariant?      @relation(fields: [ecomVariantId], references: [id], onDelete: SetNull)
+  movements     InvMovement[]
+  purchaseItems InvPurchaseItem[]
+}
+
+model InvMovement {
+  id       String @id @default(cuid())
+  tenantId String
+  itemId   String
+
+  type     String // "IN", "OUT", "ADJUSTMENT"
+  quantity Int // Absolute value of movement
+  reason   String // e.g. "Venta en tienda", "Merma", "Compra #123"
+
+  referenceId String? // Optional link to EcomOrder, ApptBooking, or Purchase
+
+  createdAt DateTime @default(now())
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  item   InvItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+model InvPurchase {
+  id         String @id @default(cuid())
+  tenantId   String
+  supplierId String
+
+  purchaseDate DateTime @default(now())
+  status       String   @default("PENDING") // PENDING, RECEIVED, CANCELLED
+  totalAmount  Decimal  @default(0)
+
+  notes String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier InvSupplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  items    InvPurchaseItem[]
+}
+
+model InvPurchaseItem {
+  id         String @id @default(cuid())
+  purchaseId String
+  itemId     String
+
+  quantity Int
+  unitCost Decimal
+  total    Decimal
+
+  purchase InvPurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  item     InvItem     @relation(fields: [itemId], references: [id], onDelete: Restrict)
 }

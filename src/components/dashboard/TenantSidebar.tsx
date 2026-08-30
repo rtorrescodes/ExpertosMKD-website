@@ -11,7 +11,8 @@ import {
   Calendar, 
   CheckSquare,
   FileText,
-  Wallet
+  Wallet,
+  Archive
 } from "lucide-react";
 
 export function TenantSidebar({ 
@@ -54,7 +55,8 @@ export function TenantSidebar({
     links.push({ name: "Tienda", href: `/site/${tenantSubdomain}/dashboard/ecommerce`, icon: ShoppingCart });
   }
 
-  // Always show ERP for now, or flag it if preferred
+  // Always show Backoffice for now
+  links.push({ name: "Inventario", href: `/site/${tenantSubdomain}/dashboard/inventory`, icon: Archive });
   links.push({ name: "ERP y Finanzas", href: `/site/${tenantSubdomain}/dashboard/erp`, icon: Wallet });
 
   // Always at the bottom

@@ -65,38 +65,53 @@ export async function createOrder(data: {
     if (!tenant) throw new Error("Tenant no encontrado");
 
     // Process order in a transaction to safely deduct inventory
-    const order = await prisma.$transaction(async (tx) => {
-      let subtotal = 0;
-      const orderItemsData = [];
+      const order = await prisma.$transaction(async (tx) => {
+        let subtotal = 0;
+        const orderItemsData = [];
+        const invMovementsData = []; // To store kardex triggers
 
-      for (const item of data.cartItems) {
-        const variant = await tx.ecomVariant.findUnique({
-          where: { id: item.variantId },
-          include: { product: true }
-        });
+        for (const item of data.cartItems) {
+          const variant = await tx.ecomVariant.findUnique({
+            where: { id: item.variantId },
+            include: { product: true, invItem: true }
+          });
 
-        if (!variant) throw new Error(`Variante no encontrada: ${item.variantId}`);
-        if (variant.inventoryQuantity < item.quantity) {
-          throw new Error(`Inventario insuficiente para ${variant.product.title}`);
+          if (!variant) throw new Error(`Variante no encontrada: ${item.variantId}`);
+          if (variant.inventoryQuantity < item.quantity) {
+            throw new Error(`Inventario insuficiente para ${variant.product.title}`);
+          }
+
+          // Deduct Ecom inventory
+          await tx.ecomVariant.update({
+            where: { id: variant.id },
+            data: { inventoryQuantity: variant.inventoryQuantity - item.quantity }
+          });
+
+          // Prepare Inv Movement if linked
+          if (variant.invItem) {
+            invMovementsData.push({
+              itemId: variant.invItem.id,
+              quantity: item.quantity,
+              tenantId: tenant.id
+            });
+            // Deduct InvItem stock
+            await tx.invItem.update({
+              where: { id: variant.invItem.id },
+              data: { currentStock: { decrement: item.quantity } }
+            });
+          }
+
+          const lineTotal = Number(variant.price) * item.quantity;
+          subtotal += lineTotal;
+
+          orderItemsData.push({
+            variantId: variant.id,
+            title: `${variant.product.title} (${variant.title})`,
+            quantity: item.quantity,
+            unitPrice: variant.price,
+            total: lineTotal
+          });
         }
-
-        // Deduct inventory
-        await tx.ecomVariant.update({
-          where: { id: variant.id },
-          data: { inventoryQuantity: variant.inventoryQuantity - item.quantity }
-        });
-
-        const lineTotal = Number(variant.price) * item.quantity;
-        subtotal += lineTotal;
-
-        orderItemsData.push({
-          variantId: variant.id,
-          title: `${variant.product.title} (${variant.title})`,
-          quantity: item.quantity,
-          unitPrice: variant.price,
-          total: lineTotal
-        });
-      }
 
       // Check if CRM person exists
       const person = await tx.crmPerson.findFirst({
@@ -117,6 +132,20 @@ export async function createOrder(data: {
           }
         }
       });
+
+      // Create Kardex OUT movements
+      if (invMovementsData.length > 0) {
+        await tx.invMovement.createMany({
+          data: invMovementsData.map(m => ({
+            tenantId: m.tenantId,
+            itemId: m.itemId,
+            type: "OUT",
+            quantity: m.quantity,
+            reason: `Venta online #${newOrder.displayId}`,
+            referenceId: newOrder.id
+          }))
+        });
+      }
 
       return newOrder;
     });
