@@ -12,6 +12,12 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
   const [editingPerson, setEditingPerson] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredPeople = people.filter(p => 
+    `${p.firstName} ${p.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (p.email && p.email.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,7 +35,7 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
         email: formData.get("email") as string,
         phone: formData.get("phone") as string,
         jobTitle: formData.get("jobTitle") as string,
-        companyId: companyId || undefined,
+        companyId: companyId ? companyId : undefined,
       });
     } else {
       result = await createPerson({
@@ -38,7 +44,7 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
         email: formData.get("email") as string,
         phone: formData.get("phone") as string,
         jobTitle: formData.get("jobTitle") as string,
-        companyId: companyId || undefined,
+        companyId: companyId ? companyId : undefined,
       });
     }
 
@@ -56,19 +62,26 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
     <div>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-white">Personas (Contactos)</h1>
+          <h1 className="text-base font-semibold leading-6 text-white">Contactos (Personas)</h1>
           <p className="mt-2 text-sm text-slate-300">
-            Gestiona los contactos individuales y su vinculación con empresas.
+            Un directorio de todas las personas individuales con las que tienes relación.
           </p>
         </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none flex items-center gap-4">
+          <input 
+            type="search" 
+            placeholder="Buscar contacto..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500"
+          />
           <button
-            onClick={() => { setEditingPerson(null); setIsModalOpen(true); }}
             type="button"
-            className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40"
+            onClick={() => { setEditingPerson(null); setIsModalOpen(true); }}
+            className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white hover:from-cyan-400 hover:to-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500 transition-all"
           >
             <Plus className="h-4 w-4" />
-            Nueva Persona
+            Nuevo Contacto
           </button>
         </div>
       </div>
@@ -95,7 +108,7 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 glass-card border-white/5">
-                  {people.map((person) => (
+                  {filteredPeople.map((person) => (
                     <tr key={person.id} className="hover:bg-white/5 cursor-pointer" onClick={() => { setEditingPerson(person); setIsModalOpen(true); }}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                         <div className="flex items-center">

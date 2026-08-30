@@ -22,6 +22,7 @@ export function OpportunitiesClient({ tenantSubdomain, opportunities, companies,
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingOpp, setEditingOpp] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   
   useEffect(() => {
     const newBoard: Record<string, any[]> = {};
@@ -30,38 +31,32 @@ export function OpportunitiesClient({ tenantSubdomain, opportunities, companies,
       if (newBoard[opp.stage]) {
         newBoard[opp.stage].push(opp);
       } else {
-        newBoard["NEW"].push(opp); // Fallback
+        if(newBoard["PROSPECT"]) newBoard["PROSPECT"].push(opp); // Fallback
       }
     });
     setBoardData(newBoard);
   }, [opportunities]);
 
   const onDragEnd = async (result: DropResult) => {
-    const { destination, source, draggableId } = result;
+    if (!result.destination) return;
+    const { source, destination, draggableId } = result;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
-    if (!destination) return;
-    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+    // Optimistic Update
+    const newBoard = { ...boardData };
+    const sourceList = [...newBoard[source.droppableId]];
+    const destList = [...newBoard[destination.droppableId]];
+    const [moved] = sourceList.splice(source.index, 1);
+    
+    moved.stage = destination.droppableId;
+    destList.splice(destination.index, 0, moved);
+    
+    newBoard[source.droppableId] = sourceList;
+    newBoard[destination.droppableId] = destList;
+    setBoardData(newBoard);
 
-    // Optimistic UI Update
-    const sourceColumn = [...boardData[source.droppableId]];
-    const destColumn = [...boardData[destination.droppableId]];
-    
-    const [movedItem] = sourceColumn.splice(source.index, 1);
-    movedItem.stage = destination.droppableId;
-    
-    if (source.droppableId === destination.droppableId) {
-      sourceColumn.splice(destination.index, 0, movedItem);
-      setBoardData({ ...boardData, [source.droppableId]: sourceColumn });
-    } else {
-      destColumn.splice(destination.index, 0, movedItem);
-      setBoardData({
-        ...boardData,
-        [source.droppableId]: sourceColumn,
-        [destination.droppableId]: destColumn,
-      });
-      // Fire server action silently
-      await updateOpportunityStage(draggableId, destination.droppableId);
-    }
+    await updateOpportunityStage(draggableId, destination.droppableId);
+    router.refresh();
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -102,7 +97,14 @@ export function OpportunitiesClient({ tenantSubdomain, opportunities, companies,
           <h1 className="text-base font-semibold leading-6 text-white">Oportunidades (Pipeline)</h1>
           <p className="mt-2 text-sm text-slate-300">Arrastra y suelta las oportunidades para avanzar en el embudo de ventas.</p>
         </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none flex items-center gap-4">
+          <input 
+            type="search" 
+            placeholder="Buscar oportunidad..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500"
+          />
           <button onClick={() => { setEditingOpp(null); setIsModalOpen(true); }} type="button" className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40">
             <Plus className="h-4 w-4" />
             Nueva Oportunidad
@@ -114,13 +116,19 @@ export function OpportunitiesClient({ tenantSubdomain, opportunities, companies,
       <div className="flex-1 overflow-x-auto overflow-y-hidden">
         <div className="flex h-full min-h-[600px] gap-4 items-start pb-4">
           <DragDropContext onDragEnd={onDragEnd}>
-            {STAGES.map((stage) => (
+            {STAGES.map((stage) => {
+              const filteredData = boardData[stage.id]?.filter(opp => 
+                opp.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                (opp.company?.name && opp.company.name.toLowerCase().includes(searchTerm.toLowerCase()))
+              ) || [];
+
+              return (
               <div key={stage.id} className="flex-shrink-0 w-80 flex flex-col h-full max-h-full rounded-md bg-white/10">
                 <div className="p-3 border-b border-white/10">
                   <h3 className="font-semibold text-sm text-slate-300 flex justify-between">
                     {stage.title}
                     <span className="bg-white/20 text-slate-400 rounded-full px-2 py-0.5 text-xs">
-                      {boardData[stage.id]?.length || 0}
+                      {filteredData.length}
                     </span>
                   </h3>
                 </div>
@@ -132,7 +140,7 @@ export function OpportunitiesClient({ tenantSubdomain, opportunities, companies,
                       {...provided.droppableProps}
                       className={`flex-1 overflow-y-auto p-2 space-y-2 ${snapshot.isDraggingOver ? "bg-white/20" : ""}`}
                     >
-                      {boardData[stage.id]?.map((opp, index) => (
+                      {filteredData.map((opp, index) => (
                         <Draggable key={opp.id} draggableId={opp.id} index={index}>
                           {(provided, snapshot) => (
                             <div
@@ -173,7 +181,7 @@ export function OpportunitiesClient({ tenantSubdomain, opportunities, companies,
                   )}
                 </Droppable>
               </div>
-            ))}
+            )})}
           </DragDropContext>
         </div>
       </div>

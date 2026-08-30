@@ -12,6 +12,12 @@ export function CompaniesClient({ companies }: { companies: any[] }) {
   const [editingCompany, setEditingCompany] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredCompanies = companies.filter(c => 
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (c.industry && c.industry.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,12 +64,19 @@ export function CompaniesClient({ companies }: { companies: any[] }) {
             Gestiona todas las empresas u organizaciones con las que haces negocios.
           </p>
         </div>
-          <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <button
-              type="button"
-              onClick={() => { setEditingCompany(null); setIsModalOpen(true); }}
-              className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white hover:from-cyan-400 hover:to-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500 transition-all"
-            >
+        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none flex items-center gap-4">
+          <input 
+            type="search" 
+            placeholder="Buscar empresa..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500"
+          />
+          <button
+            type="button"
+            onClick={() => { setEditingCompany(null); setIsModalOpen(true); }}
+            className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white hover:from-cyan-400 hover:to-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500 transition-all"
+          >
             <Plus className="h-4 w-4" />
             Nueva Empresa
           </button>
@@ -78,21 +91,21 @@ export function CompaniesClient({ companies }: { companies: any[] }) {
                 <thead className="bg-white/5">
                   <tr>
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-6">
-                      Nombre de la Empresa
+                      Empresa
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
-                      Dominio
+                      Dominio / Links
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
+                      Ubicación
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
                       Ingresos Anuales
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-white">
-                      Creado en
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 glass-card border-white/5">
-                  {companies.map((company) => (
+                  {filteredCompanies.map((company) => (
                     <tr key={company.id} className="hover:bg-white/5 cursor-pointer" onClick={() => { setEditingCompany(company); setIsModalOpen(true); }}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                         <div className="flex items-center">

@@ -70,6 +70,15 @@ export function UsersTable({
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <div className="mb-4 flex justify-between items-center">
+            <input 
+              type="search" 
+              placeholder="Buscar por nombre o correo..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500 w-full max-w-sm"
+            />
+          </div>
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
             <table className="min-w-full divide-y divide-white/10">
               <thead className="bg-white/5">
@@ -94,7 +103,7 @@ export function UsersTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 glass-card border-white/5">
-                {users.map((person) => (
+                {filteredUsers.map((person) => (
                   <tr key={person.id}>
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                       <div className="flex items-center">

@@ -14,6 +14,13 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [stock, setStock] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredProducts = products.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredOrders = orders.filter(o => 
+    o.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    o.displayId.toString().includes(searchTerm)
+  );
 
   const openModal = (product?: any) => {
     if (product) {
@@ -69,7 +76,14 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
             Gestiona tu catálogo de productos y las órdenes recibidas.
           </p>
         </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 flex gap-2">
+        <div className="mt-4 sm:ml-16 sm:mt-0 flex gap-2 items-center">
+          <input 
+            type="search" 
+            placeholder="Buscar..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500 mr-2"
+          />
           <a
             href={`/site/${tenantSubdomain}/store`}
             target="_blank"
@@ -101,7 +115,7 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
             className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium flex items-center gap-2 ${tab === "ORDERS" ? "border-black text-white" : "border-transparent text-slate-400 hover:border-white/10 hover:text-slate-300"}`}
           >
             <ShoppingBag className="w-4 h-4" /> Órdenes
-            <span className="bg-white/10 text-white ml-2 rounded-full py-0.5 px-2.5 text-xs font-medium">{orders.length}</span>
+            <span className="bg-white/10 text-white ml-2 rounded-full py-0.5 px-2.5 text-xs font-medium">{filteredOrders.length}</span>
           </button>
         </nav>
       </div>
@@ -109,7 +123,7 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
       <div className="mt-8">
         {tab === "PRODUCTS" && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {products.map(p => (
+            {filteredProducts.map(p => (
               <div key={p.id} onClick={() => openModal(p)} className="border border-white/10 rounded-lg p-4 glass-card border-white/5 shadow-sm flex flex-col justify-between cursor-pointer hover:border-cyan-500/50 transition-colors">
                 <div>
                   <div className="h-32 bg-white/10 rounded-md mb-4 flex items-center justify-center text-slate-500">
@@ -126,7 +140,7 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
                 </div>
               </div>
             ))}
-            {products.length === 0 && <p className="text-slate-400 text-sm col-span-4">No hay productos en el catálogo.</p>}
+            {filteredProducts.length === 0 && <p className="text-slate-400 text-sm col-span-4">No hay productos que coincidan con tu búsqueda.</p>}
           </div>
         )}
 
@@ -143,7 +157,7 @@ export function EcomDashboardClient({ tenantSubdomain, products, orders }: { ten
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 glass-card border-white/5">
-                {orders.map((o) => (
+                {filteredOrders.map((o) => (
                   <tr key={o.id} className="hover:bg-white/5">
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white">#{o.displayId}</td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-slate-400">{o.customerName}<br/><span className="text-xs text-slate-500">{o.customerEmail}</span></td>
