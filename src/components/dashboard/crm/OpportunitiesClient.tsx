@@ -16,7 +16,7 @@ const STAGES = [
   { id: "LOST", title: "Cerrado Perdido" }
 ];
 
-export function OpportunitiesClient({ opportunities, companies, people }: { opportunities: any[]; companies: any[]; people: any[] }) {
+export function OpportunitiesClient({ tenantSubdomain, opportunities, companies, people }: { tenantSubdomain?: string; opportunities: any[]; companies: any[]; people: any[] }) {
   const router = useRouter();
   const [boardData, setBoardData] = useState<Record<string, any[]>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
