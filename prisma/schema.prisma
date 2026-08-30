@@ -186,12 +186,14 @@ model Tenant {
   users     User[]     @relation("TenantUsers")
   auditLogs AuditLog[]
 
-  crmCompanies  CrmCompany[]
-  crmPeople     CrmPerson[]
-  crmOpps       CrmOpportunity[]
-  crmNotes      CrmNote[]
-  crmActivities CrmActivity[]
-  crmQuotes     CrmQuote[]
+  crmCompanies   CrmCompany[]
+  crmPeople      CrmPerson[]
+  crmOpps        CrmOpportunity[]
+  crmNotes       CrmNote[]
+  crmActivities  CrmActivity[]
+  crmQuotes      CrmQuote[]
+  apptEventTypes ApptEventType[]
+  apptBookings   ApptBooking[]
 
   @@index([status])
   @@index([subdomain])
@@ -251,6 +253,7 @@ model CrmPerson {
   tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   crmActivities CrmActivity[]
   crmQuotes     CrmQuote[]
+  apptBookings  ApptBooking[]
 }
 
 model CrmOpportunity {
@@ -348,4 +351,57 @@ model CrmQuoteItem {
   total       Decimal @default(0)
 
   quote CrmQuote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// ====== CELERITAS APPOINTMENTS (CAL) ======
+// ==========================================
+
+model ApptEventType {
+  id              String   @id @default(cuid())
+  tenantId        String
+  title           String // Ej. "Corte de Cabello", "Consulta Médica"
+  slug            String // Ej. "corte-cabello"
+  description     String?  @db.Text
+  durationMinutes Int      @default(30)
+  price           Decimal? @default(0)
+  isActive        Boolean  @default(true)
+
+  availability Json @default("{}") // { monday: {start, end}, tuesday... }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings ApptBooking[]
+  tenant   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, slug])
+}
+
+model ApptBooking {
+  id          String @id @default(cuid())
+  tenantId    String
+  eventTypeId String
+
+  startTime DateTime
+  endTime   DateTime
+
+  status String @default("CONFIRMED") // PENDING, CONFIRMED, CANCELLED
+
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  notes           String? @db.Text
+  customResponses Json?
+
+  personId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  eventType ApptEventType @relation(fields: [eventTypeId], references: [id])
+  person    CrmPerson?    @relation(fields: [personId], references: [id])
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([startTime])
 }

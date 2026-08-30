@@ -39,6 +39,11 @@ export function TenantSidebar({
   if (featureFlags?.quotes || featureFlags?.crm) {
     links.push({ name: "Cotizaciones", href: "/dashboard/quotes", icon: FileText }); 
   }
+  if (featureFlags?.appointments || featureFlags?.crm) {
+    links.push(
+      { name: "Citas", href: "/dashboard/appointments", icon: Calendar }
+    );
+  }
   if (featureFlags?.ecommerce) {
     links.push({ name: "Tienda", href: "/dashboard/ecommerce", icon: ShoppingCart });
   }

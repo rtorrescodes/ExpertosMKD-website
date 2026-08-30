@@ -33,9 +33,14 @@
   - Link público responsivo (`/quote/[token]`) optimizado para conversión en móviles y WhatsApp.
   - Server actions transaccionales e integración nativa con el timeline del cliente (`CrmActivity`).
 
+- **MVP 8 (Módulo de Control de Citas):** COMPLETADO.
+  - Clon arquitectónico de cal.com universal para cualquier nicho.
+  - Algoritmo de "Available Slots" programado en Server Actions con prevención de doble reserva en tiempo real (Time Overlap Verification).
+  - UI Administrativa de "Event Types" (Servicios) y Dashboard de próximas citas.
+  - Booking Portal (Ruta pública `/book/[slug]`) con wizard de 3 pasos (Fecha > Hora > Datos).
+
 ## Próximos Pasos (Inmediatos)
-1. Iniciar **MVP 8: Módulo de Control de Citas** integrando conceptos de `cal.com`.
-2. Opcionalmente configurar las pasarelas de pago dentro de la previsualización (checkout nativo de Stripe/PayPal).
+1. Iniciar **MVP 9: Módulo de Control de Proyectos** (similar a Basecamp o Asana simplificado).
 
 ## Decisiones Arquitectónicas Recientes
 - Se movió el ecosistema de tenants a `src/app/site/[tenant]` y se ajustó `proxy.ts` para resolver el conflicto del App Router entre `/[lang]` y `/[tenant]`.
