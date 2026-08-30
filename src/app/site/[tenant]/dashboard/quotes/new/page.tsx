@@ -12,7 +12,7 @@ export default async function NewQuotePage({
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   // Obtenemos los contactos del CRM (si existen)

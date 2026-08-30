@@ -12,7 +12,7 @@ export default async function UsersPage({
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   const users = await prisma.user.findMany({

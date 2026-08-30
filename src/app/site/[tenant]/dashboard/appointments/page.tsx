@@ -7,7 +7,7 @@ import { Calendar, Settings } from "lucide-react";
 
 export default async function AppointmentsDashboard({ params }: { params: { tenant: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.tenantId) redirect("/login");
+  if (!session?.user?.tenantId) redirect("/admin/login");
 
   const bookings = await prisma.apptBooking.findMany({
     where: { tenantId: session.user.tenantId, startTime: { gte: new Date() } },

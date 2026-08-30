@@ -12,7 +12,7 @@ export default async function HubLayout({
   const session = await getServerSession(authOptions);
 
   if (!session || session.user.role !== "SUPERADMIN") {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   return (

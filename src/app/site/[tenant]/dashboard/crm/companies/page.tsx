@@ -12,7 +12,7 @@ export default async function CompaniesPage({
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   const companies = await prisma.crmCompany.findMany({

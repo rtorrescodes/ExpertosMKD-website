@@ -12,7 +12,7 @@ export default async function PeoplePage({
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   const people = await prisma.crmPerson.findMany({

@@ -15,7 +15,7 @@ export default async function TenantDashboardLayout({
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   // Verificar en Base de Datos el Tenant usando el subdominio de la ruta

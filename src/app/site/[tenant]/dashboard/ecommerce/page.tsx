@@ -7,7 +7,7 @@ import { EcomDashboardClient } from "@/components/dashboard/ecommerce/EcomDashbo
 export default async function EcommerceDashboard(props: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await props.params;
   const session = await getServerSession(authOptions);
-  if (!session?.user?.tenantId) redirect("/login");
+  if (!session?.user?.tenantId) redirect("/admin/login");
 
   const products = await prisma.ecomProduct.findMany({
     where: { tenantId: session.user.tenantId },

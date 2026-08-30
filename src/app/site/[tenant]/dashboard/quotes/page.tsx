@@ -12,7 +12,7 @@ export default async function QuotesPage({
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   const quotes = await prisma.crmQuote.findMany({

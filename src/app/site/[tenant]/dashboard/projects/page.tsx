@@ -6,7 +6,7 @@ import { ProjectsListClient } from "@/components/dashboard/projects/ProjectsList
 
 export default async function ProjectsDashboard({ params }: { params: { tenant: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.tenantId) redirect("/login");
+  if (!session?.user?.tenantId) redirect("/admin/login");
 
   const projects = await prisma.prjProject.findMany({
     where: { tenantId: session.user.tenantId },

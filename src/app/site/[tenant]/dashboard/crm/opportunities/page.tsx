@@ -12,7 +12,7 @@ export default async function OpportunitiesPage({
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
-    redirect("/login");
+    redirect("/admin/login");
   }
 
   const opportunities = await prisma.crmOpportunity.findMany({

@@ -6,7 +6,7 @@ import { EventTypesClient } from "./EventTypesClient";
 
 export default async function EventTypesPage({ params }: { params: { tenant: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.tenantId) redirect("/login");
+  if (!session?.user?.tenantId) redirect("/admin/login");
 
   const eventTypes = await prisma.apptEventType.findMany({
     where: { tenantId: session.user.tenantId },
