@@ -42,20 +42,20 @@ export default async function TenantDashboardPage(props: {
         <MetricCard
           title="Usuarios Activos"
           value={totalUsers.toString()}
-          icon={<Users className="h-6 w-6 text-white" />}
+          icon={Users}
           trend="+2 esta semana"
           trendUp={true}
         />
         <MetricCard
           title="Plan Actual"
           value="Pro"
-          icon={<CheckCircle className="h-6 w-6 text-white" />}
+          icon={CheckCircle}
           description="Suscripción activa"
         />
         <MetricCard
           title="Última Actividad"
           value={format(new Date(), "dd/MM/yyyy")}
-          icon={<Activity className="h-6 w-6 text-white" />}
+          icon={Activity}
         />
       </div>
 
