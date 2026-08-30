@@ -17,7 +17,7 @@ export default async function HubLayout({
 
   return (
     <html lang="es">
-      <body className="antialiased min-h-screen">
+      <body className="antialiased min-h-screen bg-gray-50 text-gray-900">
         <div className="flex h-screen bg-gray-50">
           {/* Sidebar */}
           <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">

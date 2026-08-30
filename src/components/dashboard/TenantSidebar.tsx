@@ -15,44 +15,46 @@ import {
 
 export function TenantSidebar({ 
   tenantName, 
+  tenantSubdomain,
   featureFlags 
 }: { 
   tenantName: string; 
+  tenantSubdomain: string;
   featureFlags: any 
 }) {
   const pathname = usePathname();
 
   // Basic structure
   const links = [
-    { name: "Inicio", href: "/dashboard", icon: Home },
-    { name: "Usuarios", href: "/dashboard/users", icon: Users },
+    { name: "Inicio", href: `/site/${tenantSubdomain}/dashboard`, icon: Home },
+    { name: "Usuarios", href: `/site/${tenantSubdomain}/dashboard/users`, icon: Users },
   ];
 
   // Dynamic modules
   if (featureFlags?.crm) {
     links.push(
-      { name: "Empresas", href: "/dashboard/crm/companies", icon: Briefcase },
-      { name: "Contactos", href: "/dashboard/crm/people", icon: Users },
-      { name: "Oportunidades", href: "/dashboard/crm/opportunities", icon: CheckSquare }
+      { name: "Empresas", href: `/site/${tenantSubdomain}/dashboard/crm/companies`, icon: Briefcase },
+      { name: "Contactos", href: `/site/${tenantSubdomain}/dashboard/crm/people`, icon: Users },
+      { name: "Oportunidades", href: `/site/${tenantSubdomain}/dashboard/crm/opportunities`, icon: CheckSquare }
     );
   }
   if (featureFlags?.quotes || featureFlags?.crm) {
-    links.push({ name: "Cotizaciones", href: "/dashboard/quotes", icon: FileText }); 
+    links.push({ name: "Cotizaciones", href: `/site/${tenantSubdomain}/dashboard/quotes`, icon: FileText }); 
   }
   if (featureFlags?.appointments || featureFlags?.crm) {
     links.push(
-      { name: "Citas", href: "/dashboard/appointments", icon: Calendar }
+      { name: "Citas", href: `/site/${tenantSubdomain}/dashboard/appointments`, icon: Calendar }
     );
   }
   if (featureFlags?.projects || featureFlags?.crm) {
-    links.push({ name: "Proyectos", href: "/dashboard/projects", icon: CheckSquare });
+    links.push({ name: "Proyectos", href: `/site/${tenantSubdomain}/dashboard/projects`, icon: CheckSquare });
   }
   if (featureFlags?.ecommerce) {
-    links.push({ name: "Tienda", href: "/dashboard/ecommerce", icon: ShoppingCart });
+    links.push({ name: "Tienda", href: `/site/${tenantSubdomain}/dashboard/ecommerce`, icon: ShoppingCart });
   }
 
   // Always at the bottom
-  links.push({ name: "Configuración", href: "/dashboard/settings", icon: Settings });
+  links.push({ name: "Configuración", href: `/site/${tenantSubdomain}/dashboard/settings`, icon: Settings });
 
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">

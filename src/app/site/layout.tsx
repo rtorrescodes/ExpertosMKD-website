@@ -7,7 +7,7 @@ export default function SiteRootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="antialiased min-h-screen">
+      <body className="antialiased min-h-screen bg-gray-50 text-gray-900">
         {children}
       </body>
     </html>
