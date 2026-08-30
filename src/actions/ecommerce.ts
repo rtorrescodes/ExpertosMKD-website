@@ -130,7 +130,7 @@ export async function createOrder(data: {
 export async function updateProduct(id: string, data: { title: string; description?: string; price: number; inventoryQuantity: number; }) {
   try {
     const user = await requireTenantUser();
-    await prisma.(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       await tx.ecomProduct.updateMany({
         where: { id, tenantId: user.tenantId! },
         data: { title: data.title, description: data.description }
@@ -153,7 +153,7 @@ export async function deleteProduct(id: string) {
   try {
     const user = await requireTenantUser();
     // This will cascade delete variants if schema is configured properly, otherwise delete variants first.
-    await prisma.(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       await tx.ecomVariant.deleteMany({ where: { productId: id } });
       await tx.ecomProduct.deleteMany({ where: { id, tenantId: user.tenantId! } });
     });
