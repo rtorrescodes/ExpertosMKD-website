@@ -9,7 +9,8 @@ import {
   Briefcase, 
   ShoppingCart, 
   Calendar, 
-  CheckSquare 
+  CheckSquare,
+  FileText
 } from "lucide-react";
 
 export function TenantSidebar({ 
@@ -34,6 +35,9 @@ export function TenantSidebar({
       { name: "Contactos", href: "/dashboard/crm/people", icon: Users },
       { name: "Oportunidades", href: "/dashboard/crm/opportunities", icon: CheckSquare }
     );
+  }
+  if (featureFlags?.quotes || featureFlags?.crm) {
+    links.push({ name: "Cotizaciones", href: "/dashboard/quotes", icon: FileText }); 
   }
   if (featureFlags?.ecommerce) {
     links.push({ name: "Tienda", href: "/dashboard/ecommerce", icon: ShoppingCart });

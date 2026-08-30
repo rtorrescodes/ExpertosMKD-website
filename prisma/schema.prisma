@@ -186,10 +186,12 @@ model Tenant {
   users     User[]     @relation("TenantUsers")
   auditLogs AuditLog[]
 
-  crmCompanies CrmCompany[]
-  crmPeople    CrmPerson[]
-  crmOpps      CrmOpportunity[]
-  crmNotes     CrmNote[]
+  crmCompanies  CrmCompany[]
+  crmPeople     CrmPerson[]
+  crmOpps       CrmOpportunity[]
+  crmNotes      CrmNote[]
+  crmActivities CrmActivity[]
+  crmQuotes     CrmQuote[]
 
   @@index([status])
   @@index([subdomain])
@@ -246,7 +248,9 @@ model CrmPerson {
   opportunities CrmOpportunity[]
   notes         CrmNote[]
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  crmActivities CrmActivity[]
+  crmQuotes     CrmQuote[]
 }
 
 model CrmOpportunity {
@@ -282,4 +286,66 @@ model CrmNote {
   opportunity CrmOpportunity? @relation(fields: [opportunityId], references: [id])
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// ====== CELERITAS QUOTES & ACTIVITIES ======
+// ==========================================
+
+model CrmActivity {
+  id            String   @id @default(cuid())
+  tenantId      String
+  type          String // "NOTE", "QUOTE_SENT", "QUOTE_ACCEPTED", "EMAIL_RECEIVED"
+  content       String?  @db.Text
+  personId      String?
+  opportunityId String?
+  quoteId       String?
+  createdAt     DateTime @default(now())
+
+  tenant Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person CrmPerson? @relation(fields: [personId], references: [id])
+  quote  CrmQuote?  @relation(fields: [quoteId], references: [id])
+}
+
+model CrmQuote {
+  id          String @id @default(cuid())
+  tenantId    String
+  quoteNumber Int    @default(autoincrement())
+  publicToken String @unique @default(uuid())
+  status      String @default("DRAFT") // DRAFT, SENT, ACCEPTED, DECLINED, PAID
+  template    String @default("MODERN")
+
+  customerName  String?
+  customerEmail String?
+
+  personId String?
+  person   CrmPerson? @relation(fields: [personId], references: [id])
+
+  subtotal      Decimal @default(0)
+  discountTotal Decimal @default(0)
+  taxTotal      Decimal @default(0)
+  grandTotal    Decimal @default(0)
+  notes         String? @db.Text
+
+  validUntil DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  items      CrmQuoteItem[]
+  activities CrmActivity[]
+  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model CrmQuoteItem {
+  id          String  @id @default(cuid())
+  quoteId     String
+  productId   String?
+  name        String
+  description String?
+  quantity    Int     @default(1)
+  unitPrice   Decimal @default(0)
+  discount    Decimal @default(0)
+  total       Decimal @default(0)
+
+  quote CrmQuote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 }

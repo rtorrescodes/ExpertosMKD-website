@@ -26,9 +26,14 @@
   - Vistas dedicadas y condicionales (FeatureFlags) en el Sidebar.
   - Scripts generados y schema.prisma de ExpertosMKD restaurado (se añadieron los de Celeritas sin destruir los anteriores).
 
+- **MVP 7 (Módulo de Cotizador):** EN PROGRESO.
+  - Documentos de Specify generados en `.specify/08-quote-module/`.
+  - Diseñados los modelos `CrmQuote`, `CrmQuoteItem` y `CrmActivity` en papel.
+
 ## Próximos Pasos (Inmediatos)
-1. Iniciar **MVP 7: Módulo de Cotizador** usando los procesos y ciclo Spec-Driven.
-2. Explorar separación completa de Turborepo si se decide escalar el código físicamente (aunque actualmente Next.js rutea todo internamente y seguro en la branch).
+1. Ejecutar Fase 1 de MVP 7: Inyectar modelos de Cotizador en `schema.prisma`.
+2. Construir el **Quote Builder (Split-screen)** con previsualización en tiempo real.
+3. Construir la ruta pública `/quote/[token]` optimizada para WhatsApp y conversión.
 
 ## Decisiones Arquitectónicas Recientes
 - Se movió el ecosistema de tenants a `src/app/site/[tenant]` y se ajustó `proxy.ts` para resolver el conflicto del App Router entre `/[lang]` y `/[tenant]`.
