@@ -6,8 +6,11 @@ import Link from "next/link";
 import { Calendar, Settings } from "lucide-react";
 
 export default async function AppointmentsDashboard(props: {
-  const { tenant } = await props.params; params: Promise<{ tenant: string }> }) {
+  params: Promise<{ tenant: string }>;
+}) {
+  const { tenant } = await props.params;
   const session = await getServerSession(authOptions);
+  
   if (!session?.user?.tenantId) redirect("/admin/login");
 
   const bookings = await prisma.apptBooking.findMany({
