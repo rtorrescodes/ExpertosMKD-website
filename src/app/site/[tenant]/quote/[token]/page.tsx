@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma/client";
 import { notFound } from "next/navigation";
 import { PublicQuoteClient } from "@/components/dashboard/quotes/PublicQuoteClient";
 
-export default async function PublicQuotePage(props: { params: Promise<{ tenant: string, token: string }> })) {
+export default async function PublicQuotePage(props: { params: Promise<{ tenant: string, token: string }> }) {
   const quote = await prisma.crmQuote.findUnique({
     where: { publicToken: token },
     include: {

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma/client";
 import { redirect } from "next/navigation";
 import { QuoteBuilderClient } from "@/components/dashboard/quotes/QuoteBuilderClient";
 
-export default async function NewQuotePage(props: { params: Promise<{ tenant: string }> })) {
+export default async function NewQuotePage(props: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await props.params;
   const session = await getServerSession(authOptions);
 
