@@ -11,7 +11,7 @@ export default async function ProjectLayout({
   params: { tenant: string, id: string };
 }) {
   const project = await prisma.prjProject.findUnique({
-    where: { id: params.id },
+    where: { id: id },
   });
 
   if (!project) notFound();
@@ -26,10 +26,10 @@ export default async function ProjectLayout({
         </div>
         
         <div className="flex gap-2">
-          <Link href={`/site/${params.tenant}/dashboard/projects/${project.id}/kanban`} className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <Link href={`/site/${tenant}/dashboard/projects/${project.id}/kanban`} className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50">
             <KanbanSquare className="w-4 h-4" /> Kanban
           </Link>
-          <Link href={`/site/${params.tenant}/dashboard/projects/${project.id}/gantt`} className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <Link href={`/site/${tenant}/dashboard/projects/${project.id}/gantt`} className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50">
             <BarChartHorizontal className="w-4 h-4" /> Gantt
           </Link>
         </div>

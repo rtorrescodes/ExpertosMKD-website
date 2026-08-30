@@ -48,6 +48,7 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@prisma/client": "^6.19.3",
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
@@ -60,6 +61,7 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "playwright": "^1.62.1",
     "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "typescript": "^5"

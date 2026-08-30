@@ -2,13 +2,9 @@ import { prisma } from "@/lib/prisma/client";
 import { notFound } from "next/navigation";
 import { PublicQuoteClient } from "@/components/dashboard/quotes/PublicQuoteClient";
 
-export default async function PublicQuotePage({
-  params,
-}: {
-  params: { tenant: string; token: string };
-}) {
+export default async function PublicQuotePage(props: { params: Promise<{ tenant: string, token: string }> })) {
   const quote = await prisma.crmQuote.findUnique({
-    where: { publicToken: params.token },
+    where: { publicToken: token },
     include: {
       tenant: true,
       person: true,
@@ -21,7 +17,7 @@ export default async function PublicQuotePage({
   }
 
   // Verificar que el tenant del token coincide con el subdomain de la URL por seguridad (opcional, pero buena práctica)
-  if (quote.tenant.subdomain !== params.tenant) {
+  if (quote.tenant.subdomain !== tenantSlug) {
     notFound();
   }
 

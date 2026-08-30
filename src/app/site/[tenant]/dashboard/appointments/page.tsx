@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Calendar, Settings } from "lucide-react";
 
-export default async function AppointmentsDashboard({ params }: { params: { tenant: string } }) {
+export default async function AppointmentsDashboard(props: {
+  const { tenant } = await props.params; params: Promise<{ tenant: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.tenantId) redirect("/admin/login");
 
@@ -26,7 +27,7 @@ export default async function AppointmentsDashboard({ params }: { params: { tena
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 flex gap-3">
           <Link
-            href={`/site/${params.tenant}/dashboard/appointments/event-types`}
+            href={`/site/${tenant}/dashboard/appointments/event-types`}
             className="flex items-center gap-2 rounded-md bg-white border px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 shadow-sm"
           >
             <Settings className="h-4 w-4" />

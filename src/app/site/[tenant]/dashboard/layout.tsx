@@ -5,13 +5,12 @@ import { prisma } from "@/lib/prisma/client";
 import { TenantSidebar } from "@/components/dashboard/TenantSidebar";
 import { TenantHeader } from "@/components/dashboard/TenantHeader";
 
-export default async function TenantDashboardLayout({
-  children,
-  params,
-}: {
+export default async function TenantDashboardLayout(props: {
   children: React.ReactNode;
-  params: { tenant: string };
+  params: Promise<{ tenant: string }>;
 }) {
+  const { tenant } = await props.params;
+  const children = props.children;
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -20,7 +19,7 @@ export default async function TenantDashboardLayout({
 
   // Verificar en Base de Datos el Tenant usando el subdominio de la ruta
   const tenantData = await prisma.tenant.findUnique({
-    where: { subdomain: params.tenant },
+    where: { subdomain: tenant },
   });
 
   if (!tenantData) {

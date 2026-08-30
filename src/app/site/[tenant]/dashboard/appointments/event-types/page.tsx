@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma/client";
 import { redirect } from "next/navigation";
 import { EventTypesClient } from "./EventTypesClient";
 
-export default async function EventTypesPage({ params }: { params: { tenant: string } }) {
+export default async function EventTypesPage(props: {
+  const { tenant } = await props.params; params: Promise<{ tenant: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.tenantId) redirect("/admin/login");
 
@@ -15,7 +16,7 @@ export default async function EventTypesPage({ params }: { params: { tenant: str
 
   return (
     <EventTypesClient 
-      tenantSubdomain={params.tenant} 
+      tenantSubdomain={tenant} 
       eventTypes={JSON.parse(JSON.stringify(eventTypes))} 
     />
   );

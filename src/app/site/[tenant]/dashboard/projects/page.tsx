@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma/client";
 import { redirect } from "next/navigation";
 import { ProjectsListClient } from "@/components/dashboard/projects/ProjectsListClient";
 
-export default async function ProjectsDashboard({ params }: { params: { tenant: string } }) {
+export default async function ProjectsDashboard(props: {
+  const { tenant } = await props.params; params: Promise<{ tenant: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.tenantId) redirect("/admin/login");
 
@@ -16,7 +17,7 @@ export default async function ProjectsDashboard({ params }: { params: { tenant: 
 
   return (
     <ProjectsListClient 
-      tenantSubdomain={params.tenant}
+      tenantSubdomain={tenant}
       projects={JSON.parse(JSON.stringify(projects))}
     />
   );

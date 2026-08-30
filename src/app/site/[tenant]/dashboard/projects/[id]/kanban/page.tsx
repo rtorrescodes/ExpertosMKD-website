@@ -2,9 +2,10 @@ import { prisma } from "@/lib/prisma/client";
 import { ProjectKanbanClient } from "@/components/dashboard/projects/ProjectKanbanClient";
 import { notFound } from "next/navigation";
 
-export default async function ProjectKanbanPage({ params }: { params: { tenant: string, id: string } }) {
+export default async function ProjectKanbanPage(props: {
+  const { tenant, id } = await props.params; params: Promise<{ tenant: string, id: string }> }) {
   const project = await prisma.prjProject.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: {
       tasks: {
         include: { assignedTo: true }

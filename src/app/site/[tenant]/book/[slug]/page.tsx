@@ -2,12 +2,13 @@ import { prisma } from "@/lib/prisma/client";
 import { notFound } from "next/navigation";
 import { BookingWizardClient } from "./BookingWizardClient";
 
-export default async function BookingPage({ params }: { params: { tenant: string, slug: string } }) {
-  const tenant = await prisma.tenant.findUnique({ where: { subdomain: params.tenant } });
+export default async function BookingPage(props: {
+  const { tenant, slug } = await props.params; params: Promise<{ tenant: string, slug: string }> }) {
+  const tenant = await prisma.tenant.findUnique({ where: { subdomain: tenant } });
   if (!tenant) notFound();
 
   const eventType = await prisma.apptEventType.findUnique({
-    where: { tenantId_slug: { tenantId: tenant.id, slug: params.slug } }
+    where: { tenantId_slug: { tenantId: tenant.id, slug: slug } }
   });
 
   if (!eventType || !eventType.isActive) notFound();
@@ -28,7 +29,7 @@ export default async function BookingPage({ params }: { params: { tenant: string
 
         {/* Right Side: Interactive Calendar/Form */}
         <div className="p-8 md:w-2/3">
-          <BookingWizardClient tenantSubdomain={params.tenant} eventSlug={params.slug} />
+          <BookingWizardClient tenantSubdomain={tenant} eventSlug={slug} />
         </div>
       </div>
     </div>
