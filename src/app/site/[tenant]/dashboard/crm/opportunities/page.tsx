@@ -31,7 +31,10 @@ export default async function OpportunitiesPage(props: { params: Promise<{ tenan
   return (
     <OpportunitiesClient 
       tenantSubdomain={tenant}
-      opportunities={JSON.parse(JSON.stringify(opportunities))} 
+      opportunities={opportunities.map(opp => ({
+        ...opp,
+        amount: opp.amount ? Number(opp.amount) : null,
+      }))} 
       companies={companies}
       people={people}
     />

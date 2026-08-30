@@ -118,7 +118,7 @@ export async function createOpportunity(data: {
     });
     
     revalidatePath(`/site/[tenant]/dashboard/crm/opportunities`, "page");
-    return { success: true, opportunity };
+    return { success: true };
   } catch (error: any) {
     console.error(error);
     return { error: error.message || "Error al crear oportunidad" };
