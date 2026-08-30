@@ -26,14 +26,16 @@
   - Vistas dedicadas y condicionales (FeatureFlags) en el Sidebar.
   - Scripts generados y schema.prisma de ExpertosMKD restaurado (se añadieron los de Celeritas sin destruir los anteriores).
 
-- **MVP 7 (Módulo de Cotizador):** EN PROGRESO.
-  - Documentos de Specify generados en `.specify/08-quote-module/`.
-  - Diseñados los modelos `CrmQuote`, `CrmQuoteItem` y `CrmActivity` en papel.
+- **MVP 7 (Módulo de Cotizador):** COMPLETADO.
+  - Interfaz de "Quote Builder" interactiva (Split-screen React view).
+  - Tres plantillas de renderizado integradas (MODERN, CLASSIC, MINIMALIST).
+  - Selector inteligente (CRM contact autocompletion vs Manual Mode).
+  - Link público responsivo (`/quote/[token]`) optimizado para conversión en móviles y WhatsApp.
+  - Server actions transaccionales e integración nativa con el timeline del cliente (`CrmActivity`).
 
 ## Próximos Pasos (Inmediatos)
-1. Ejecutar Fase 1 de MVP 7: Inyectar modelos de Cotizador en `schema.prisma`.
-2. Construir el **Quote Builder (Split-screen)** con previsualización en tiempo real.
-3. Construir la ruta pública `/quote/[token]` optimizada para WhatsApp y conversión.
+1. Iniciar **MVP 8: Módulo de Control de Citas** integrando conceptos de `cal.com`.
+2. Opcionalmente configurar las pasarelas de pago dentro de la previsualización (checkout nativo de Stripe/PayPal).
 
 ## Decisiones Arquitectónicas Recientes
 - Se movió el ecosistema de tenants a `src/app/site/[tenant]` y se ajustó `proxy.ts` para resolver el conflicto del App Router entre `/[lang]` y `/[tenant]`.
