@@ -196,6 +196,8 @@ model Tenant {
   apptEventTypes ApptEventType[]
   apptBookings   ApptBooking[]
   prjProjects    PrjProject[]
+  ecomProducts   EcomProduct[]
+  ecomOrders     EcomOrder[]
 
   @@index([status])
   @@index([subdomain])
@@ -258,6 +260,7 @@ model CrmPerson {
   crmQuotes     CrmQuote[]
   apptBookings  ApptBooking[]
   prjProjects   PrjProject[]
+  ecomOrders    EcomOrder[]
 }
 
 model CrmOpportunity {
@@ -463,4 +466,72 @@ model PrjTask {
 
   dependsOn      PrjTask?  @relation("TaskDependencies", fields: [dependsOnId], references: [id])
   dependentTasks PrjTask[] @relation("TaskDependencies")
+}
+
+// ==========================================
+// ====== CELERITAS E-COMMERCE (MEDUSA) =====
+// ==========================================
+
+model EcomProduct {
+  id          String  @id @default(cuid())
+  tenantId    String
+  title       String
+  handle      String
+  description String? @db.Text
+  isPublished Boolean @default(true)
+  imageUrl    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants EcomVariant[]
+  tenant   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, handle])
+}
+
+model EcomVariant {
+  id                String  @id @default(cuid())
+  productId         String
+  title             String
+  sku               String?
+  price             Decimal @default(0)
+  inventoryQuantity Int     @default(0)
+
+  product    EcomProduct     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems EcomOrderItem[]
+}
+
+model EcomOrder {
+  id        String @id @default(cuid())
+  tenantId  String
+  displayId Int    @default(autoincrement())
+  status    String @default("PENDING")
+
+  customerName  String
+  customerEmail String
+  personId      String?
+
+  subtotal Decimal @default(0)
+  total    Decimal @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items  EcomOrderItem[]
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person CrmPerson?      @relation(fields: [personId], references: [id])
+}
+
+model EcomOrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  variantId String?
+  title     String
+  quantity  Int
+  unitPrice Decimal @default(0)
+  total     Decimal @default(0)
+
+  order   EcomOrder    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant EcomVariant? @relation(fields: [variantId], references: [id])
 }

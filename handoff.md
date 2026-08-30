@@ -45,8 +45,20 @@
   - **Diagrama de Gantt Nativo:** Construido en puro CSS Grid sin dependencias pesadas. Mapea `startDate` y `dueDate` dibujando barras temporales en un eje X interactivo que abarca de manera dinámica desde el inicio de la primera tarea hasta el fin de la última.
   - Roles: Las tareas se pueden asignar directamente a los Empleados (Usuarios) dados de alta en el Tenant.
 
-## Próximos Pasos (Inmediatos)
-1. Iniciar **MVP 10: Módulo de Tienda Virtual (Medusa.js / E-commerce Base)**.
+- **MVP 10 (Módulo de Tienda Virtual - Medusa Architecture):** COMPLETADO.
+  - Implementación nativa del esquema Medusa.js (Productos, Variantes, Órdenes, Líneas de Detalle) en el Prisma Schema de Celeritas.
+  - **Headless Storefront:** Rutas públicas `/store`, `/store/p/[handle]`, y `/store/checkout` altamente optimizadas y minimalistas.
+  - **Persistencia de Carrito:** Proveedor de React Context (`StoreCartProvider`) sincronizado con `localStorage` aislado por tenant (`celeritas_cart_[tenant]`).
+  - **Motor Transaccional:** `createOrder` implementado como Prisma Transaction (`$transaction`). Verifica inventario en tiempo real, descuenta el stock atómicamente y genera la orden.
+
+## Hito Alcanzado
+Hemos completado el **Roadmap de los 10 MVPs Fundacionales**. Celeritas ahora es un SaaS multi-tenant plenamente funcional con capacidad para habilitar a demanda:
+- Sitio Web Base
+- CRM + Kanban
+- Motor de Cotizaciones + PDFs
+- Motor de Citas (Clon Cal.com)
+- Control de Proyectos (Gantt + Kanban)
+- Tienda Virtual (Arquitectura Medusa.js)
 
 ## Decisiones Arquitectónicas Recientes
 - Se movió el ecosistema de tenants a `src/app/site/[tenant]` y se ajustó `proxy.ts` para resolver el conflicto del App Router entre `/[lang]` y `/[tenant]`.
