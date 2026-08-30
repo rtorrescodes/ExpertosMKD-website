@@ -4,10 +4,8 @@ import { prisma } from "@/lib/prisma/client";
 import { redirect } from "next/navigation";
 import { PeopleClient } from "@/components/dashboard/crm/PeopleClient";
 
-export default async function PeoplePage({
-  props: {
-  params: Promise<{ tenant: string }>;
-}) {
+export default async function PeoplePage(props: { params: Promise<{ tenant: string }> }) {
+  const { tenant } = await props.params;
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
@@ -17,19 +15,19 @@ export default async function PeoplePage({
   const people = await prisma.crmPerson.findMany({
     where: { tenantId: session.user.tenantId },
     include: { company: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "desc" }
   });
 
   const companies = await prisma.crmCompany.findMany({
     where: { tenantId: session.user.tenantId },
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
+    select: { id: true, name: true }
   });
 
   return (
     <PeopleClient 
+      tenantSubdomain={tenant}
       people={JSON.parse(JSON.stringify(people))} 
-      companies={companies}
+      companies={JSON.parse(JSON.stringify(companies))}
     />
   );
 }

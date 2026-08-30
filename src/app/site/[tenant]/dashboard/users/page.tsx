@@ -1,36 +1,25 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth.config";
 import { prisma } from "@/lib/prisma/client";
-import { UsersView } from "@/components/dashboard/users/UsersView";
 import { redirect } from "next/navigation";
+import { UsersView } from "@/components/dashboard/users/UsersView";
 
-export default async function UsersPage({
-  params,
-}: {
-  props: { params: Promise<{ tenant: string }> };
+export default async function UsersPage(props: {
+  params: Promise<{ tenant: string }>;
 }) {
   const { tenant } = await props.params;
- session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.tenantId) {
     redirect("/admin/login");
   }
 
+  // Fetch only users for this tenant
   const users = await prisma.user.findMany({
-    where: { tenantId: session.user.tenantId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      emailVerified: true
+    where: {
+      tenantId: session.user.tenantId,
     }
   });
 
-  return (
-    <UsersView 
-      users={users} 
-      currentUserRole={session.user.role} 
-    />
-  );
+  return <UsersView initialUsers={JSON.parse(JSON.stringify(users))} tenantSubdomain={tenant} />;
 }
