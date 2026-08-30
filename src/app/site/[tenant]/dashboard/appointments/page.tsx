@@ -21,6 +21,11 @@ export default async function AppointmentsDashboard(props: {
     orderBy: { startTime: "asc" }
   });
 
+  const eventTypes = await prisma.apptEventType.findMany({
+    where: { tenantId: session.user.tenantId, isActive: true },
+    orderBy: { title: "asc" }
+  });
+
   return (
     <div>
       <div className="sm:flex sm:items-center mb-6">
@@ -41,7 +46,11 @@ export default async function AppointmentsDashboard(props: {
         </div>
       </div>
 
-      <AppointmentsClient bookings={JSON.parse(JSON.stringify(bookings))} tenantSubdomain={tenant} />
+      <AppointmentsClient 
+        bookings={JSON.parse(JSON.stringify(bookings))} 
+        eventTypes={JSON.parse(JSON.stringify(eventTypes))}
+        tenantSubdomain={tenant} 
+      />
     </div>
   );
 }

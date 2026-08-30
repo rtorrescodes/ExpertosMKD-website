@@ -36,7 +36,7 @@ export async function createCompany(data: {
     });
     
     revalidatePath(`/site/[tenant]/dashboard/crm/companies`, "page");
-    return { success: true, company };
+    return { success: true };
   } catch (error: any) {
     console.error(error);
     return { error: error.message || "Error al crear la empresa" };
@@ -75,7 +75,7 @@ export async function createPerson(data: {
     });
     
     revalidatePath(`/site/[tenant]/dashboard/crm/people`, "page");
-    return { success: true, person };
+    return { success: true };
   } catch (error: any) {
     console.error(error);
     return { error: error.message || "Error al crear la persona" };
@@ -163,9 +163,11 @@ export async function deleteCompany(id: string) {
   try {
     const user = await requireTenantUser();
     await prisma.crmCompany.deleteMany({ where: { id, tenantId: user.tenantId! } });
-    revalidatePath(/site/[tenant]/dashboard/crm/companies, "page");
+    revalidatePath(`/site/[tenant]/dashboard/crm/companies`, "page");
     return { success: true };
-  } catch (error: any) { return { error: error.message }; }
+  } catch (error: any) {
+    return { error: error.message };
+  }
 }
 
 export async function updatePerson(id: string, data: { firstName: string; lastName: string; email?: string; phone?: string; jobTitle?: string; companyId?: string; }) {
@@ -177,7 +179,7 @@ export async function updatePerson(id: string, data: { firstName: string; lastNa
     }
     const comp = await prisma.crmPerson.updateMany({ where: { id, tenantId: user.tenantId! }, data });
     if (comp.count === 0) throw new Error("No encontrado");
-    revalidatePath(/site/[tenant]/dashboard/crm/people, "page");
+    revalidatePath("/site/[tenant]/dashboard/crm/people", "page");
     return { success: true };
   } catch (error: any) { return { error: error.message }; }
 }

@@ -48,7 +48,7 @@ export async function createEventType(data: {
     });
 
     revalidatePath(`/site/[tenant]/dashboard/appointments`, "layout");
-    return { success: true, eventType };
+    return { success: true };
   } catch (error: any) {
     console.error(error);
     return { error: error.message || "Error al crear tipo de evento" };
@@ -139,7 +139,14 @@ export async function getAvailableSlots(tenantSubdomain: string, eventSlug: stri
       return !isConflict;
     });
 
-    return { success: true, slots: availableSlots, eventType };
+    return { 
+      success: true, 
+      slots: availableSlots, 
+      eventType: {
+        ...eventType,
+        price: eventType.price ? Number(eventType.price) : 0
+      }
+    };
   } catch (error: any) {
     console.error(error);
     return { error: error.message || "Error al obtener disponibilidad" };
@@ -221,5 +228,36 @@ export async function updateBookingStatus(bookingId: string, status: string) {
     return { success: true };
   } catch (error: any) {
     return { error: error.message };
+  }
+}
+export async function createManualBooking(data: {
+  eventTypeId: string;
+  startTime: string;
+  endTime: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+}) {
+  try {
+    const user = await requireTenantUser();
+    
+    await prisma.apptBooking.create({
+      data: {
+        tenantId: user.tenantId!,
+        eventTypeId: data.eventTypeId,
+        startTime: new Date(data.startTime),
+        endTime: new Date(data.endTime),
+        customerName: data.customerName,
+        customerEmail: data.customerEmail,
+        customerPhone: data.customerPhone || null,
+        status: "CONFIRMED",
+      }
+    });
+
+    revalidatePath("/site/[tenant]/dashboard/appointments", "page");
+    return { success: true };
+  } catch (error: any) {
+    console.error(error);
+    return { error: error.message || "Error al crear la cita manualmente" };
   }
 }
