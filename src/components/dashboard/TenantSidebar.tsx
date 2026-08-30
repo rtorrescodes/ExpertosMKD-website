@@ -44,6 +44,9 @@ export function TenantSidebar({
       { name: "Citas", href: "/dashboard/appointments", icon: Calendar }
     );
   }
+  if (featureFlags?.projects || featureFlags?.crm) {
+    links.push({ name: "Proyectos", href: "/dashboard/projects", icon: CheckSquare });
+  }
   if (featureFlags?.ecommerce) {
     links.push({ name: "Tienda", href: "/dashboard/ecommerce", icon: ShoppingCart });
   }

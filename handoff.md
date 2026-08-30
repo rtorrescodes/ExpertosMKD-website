@@ -39,8 +39,14 @@
   - UI Administrativa de "Event Types" (Servicios) y Dashboard de próximas citas.
   - Booking Portal (Ruta pública `/book/[slug]`) con wizard de 3 pasos (Fecha > Hora > Datos).
 
+- **MVP 9 (Módulo de Control de Proyectos):** COMPLETADO.
+  - Vistas duales (Layout persistente de Tabs) para visualizar el mismo proyecto como Kanban o como Gantt.
+  - **Kanban Board:** Reutilización de `dnd` para drag and drop de tareas interactivas entre columnas (TODO, IN PROGRESS, REVIEW, DONE).
+  - **Diagrama de Gantt Nativo:** Construido en puro CSS Grid sin dependencias pesadas. Mapea `startDate` y `dueDate` dibujando barras temporales en un eje X interactivo que abarca de manera dinámica desde el inicio de la primera tarea hasta el fin de la última.
+  - Roles: Las tareas se pueden asignar directamente a los Empleados (Usuarios) dados de alta en el Tenant.
+
 ## Próximos Pasos (Inmediatos)
-1. Iniciar **MVP 9: Módulo de Control de Proyectos** (similar a Basecamp o Asana simplificado).
+1. Iniciar **MVP 10: Módulo de Tienda Virtual (Medusa.js / E-commerce Base)**.
 
 ## Decisiones Arquitectónicas Recientes
 - Se movió el ecosistema de tenants a `src/app/site/[tenant]` y se ajustó `proxy.ts` para resolver el conflicto del App Router entre `/[lang]` y `/[tenant]`.
