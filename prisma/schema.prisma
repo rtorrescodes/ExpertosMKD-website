@@ -8,50 +8,127 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// NextAuth Models
+// ============ MODELOS BASE ============
 
-model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
+model Tenant {
+  id            String          @id @default(cuid())
+  name          String          @unique
+  subdomain     String          @unique
+  customDomain  String?
+  status        TenantStatus    @default(ACTIVE)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Configuración
+  settings      Json            @default("{}")
+  featureFlags  Json            @default("{}")
+  
+  // Fechas de ciclo de vida
+  trialEndsAt   DateTime?
+  gracePeriodEndsAt DateTime?
+  cancelledAt   DateTime?
+  
+  // Relaciones
+  users         User[]
+  sessions      Session[]
+  auditLogs     AuditLog[]
+  
+  @@index([status])
+  @@index([subdomain])
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+enum TenantStatus {
+  ACTIVE
+  TRIAL
+  GRACE_PERIOD
+  SUSPENDED
+  CANCELLED
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
+  email         String          @unique
+  password      String?         // Hasheado con bcrypt
   name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          Role      @default(USER)
-  accounts      Account[]
-  sessions      Session[]
+  role          UserRole        @default(MEMBER)
+  tenantId      String?         // Null = super admin
   
-  // CRM Relations
-  leads         Lead[]
-  templates     Template[]
-  tasks         Task[]
+  // Seguridad
+  emailVerified DateTime?
+  lastLoginAt   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relaciones
+  tenant        Tenant?         @relation(fields: [tenantId], references: [id])
+  sessions      Session[]
+  auditLogs     AuditLog[]
+  
+  @@index([tenantId])
+  @@index([email])
+}
+
+enum UserRole {
+  SUPER_ADMIN    // Acceso a /hub y gestión global
+  OWNER          // Dueño del tenant
+  ADMIN          // Admin del tenant
+  MEMBER         // Miembro regular
+}
+
+model Session {
+  id            String          @id @default(cuid())
+  userId        String
+  tenantId      String          @default("")
+  token         String          @unique
+  expiresAt     DateTime
+  createdAt     DateTime        @default(now())
+  
+  // Device info (opcional)
+  userAgent     String?
+  ipAddress     String?
+  
+  // Relaciones
+  user          User            @relation(fields: [userId], references: [id])
+  tenant        Tenant?         @relation(fields: [tenantId], references: [id])
+  
+  @@index([userId])
+  @@index([token])
+  @@index([tenantId])
+}
+
+model AuditLog {
+  id            String          @id @default(cuid())
+  tenantId      String
+  userId        String?
+  action        String          // "tenant.created", "user.invited", "feature.enabled"
+  details       Json
+  ipAddress     String?
+  createdAt     DateTime        @default(now())
+  
+  // Relaciones
+  tenant        Tenant          @relation(fields: [tenantId], references: [id])
+  user          User?           @relation(fields: [userId], references: [id])
+  
+  @@index([tenantId])
+  @@index([createdAt])
+}
+
+// ============ MODELOS DE FEATURES (opcionales) ============
+
+// Los siguientes modelos se activan según feature flags del tenant
+
+model CRM {
+  // Activo si featureFlags.crm = true
+  id            String          @id @default(cuid())
+  tenantId      String
+  // ... campos específicos de CRM
+}
+
+model Ecommerce {
+  // Activo si featureFlags.ecommerce = true
+  id            String          @id @default(cuid())
+  tenantId      String
+  // ... campos específicos de tienda
 }
 
 model VerificationToken {
@@ -60,105 +137,4 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-// CRM Models
-
-enum Role {
-  USER
-  ADMIN
-}
-
-enum LeadStatus {
-  NEW
-  CONTACTED
-  QUALIFIED
-  PROPOSAL_SENT
-  CLOSED_WON
-  CLOSED_LOST
-}
-
-model Industry {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  leads     Lead[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Lead {
-  id            String      @id @default(cuid())
-  name          String
-  email         String?
-  phone         String?
-  companyName   String?
-  websiteUrl    String?
-  
-  industryId    String?
-  industry      Industry?   @relation(fields: [industryId], references: [id])
-  
-  state         String?
-  city          String?
-  status        LeadStatus  @default(NEW)
-  source        String?     // e.g., "DeepSeek Scraper", "Manual"
-  notes         String?     @db.Text
-  
-  // Scraped Data Extra
-  socialLinks   Json?
-  usesGenericEmail Boolean  @default(false)
-  hasWebsite    Boolean     @default(true)
-  isBlacklisted Boolean     @default(false)
-  
-  rating        String      @default("NONE") // "RED", "YELLOW", "GREEN", "NONE"
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  assignedToId  String?
-  assignedTo    User?       @relation(fields: [assignedToId], references: [id])
-  activities    Activity[]
-  tasks         Task[]
-}
-
-model Template {
-  id          String   @id @default(cuid())
-  name        String
-  subject     String
-  content     String   @db.Text
-  isPdfOnly   Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-}
-
-model Activity {
-  id          String   @id @default(cuid())
-  type        String   // "EMAIL_SENT", "EMAIL_RECEIVED", "CALL", "MEETING"
-  subject     String?
-  content     String?  @db.Text
-  createdAt   DateTime @default(now())
-  
-  leadId      String
-  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-}
-
-model Task {
-  id          String   @id @default(cuid())
-  title       String
-  description String?  @db.Text
-  dueDate     DateTime
-  type        String   // "CALL", "MEETING", "EMAIL", "TODO"
-  status      String   @default("PENDING") // "PENDING", "COMPLETED", "CANCELLED"
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  leadId      String?
-  lead        Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
 }

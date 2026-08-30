@@ -1,15 +1,34 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
 import { getToken } from 'next-auth/jwt'
+import { tenantMiddleware } from './lib/tenants/tenant-middleware';
 
 const locales = ['es', 'en']
 const defaultLocale = 'es'
 
 export default async function proxy(request: NextRequest) {
+  // First, check if this is a tenant request
+  const url = request.nextUrl.clone();
+  const hostname = request.headers.get("host") || "";
+  
+  // Basic check for Celeritas multi-tenant
+  const isCeleritasHub = pathnameStartsWith(url.pathname, '/hub');
+  
+  // We can let the tenantMiddleware run first. If it rewrites to a tenant, it will return a NextResponse.rewrite
+  if (hostname !== "expertosmkd.com" && !isCeleritasHub && !hostname.startsWith("localhost:") && !hostname.startsWith("www.")) {
+     // Run tenantMiddleware if it's a subdomain (even on localhost, e.g. tenant.localhost:3000)
+     const tenantResponse = await tenantMiddleware(request);
+     if (tenantResponse) return tenantResponse;
+  }
+  
+  if (isCeleritasHub) {
+    return NextResponse.next();
+  }
+
   const { pathname } = request.nextUrl
   
   // Skip i18n for internal routes
-  const isInternal = pathname.startsWith('/admin') || pathname.startsWith('/api')
+  const isInternal = pathname.startsWith('/admin') || pathname.startsWith('/api') || pathname.startsWith('/hub')
 
   // --- NextAuth Protection for Admin Routes ---
   if (pathname.startsWith('/admin')) {
@@ -35,7 +54,6 @@ export default async function proxy(request: NextRequest) {
     }
     
     // If it's an /admin route and they are authenticated, let the request pass.
-    // Admin routes do not need the Supabase `updateSession` logic.
     return NextResponse.next()
   }
 
@@ -47,29 +65,25 @@ export default async function proxy(request: NextRequest) {
     if (!pathnameHasLocale) {
       const url = request.nextUrl.clone()
       
-      // Check language preference
       const acceptLanguage = request.headers.get('accept-language') || ''
       const preferredLocale = acceptLanguage.toLowerCase().includes('en') ? 'en' : defaultLocale
       
-      // Avoid trailing slash if pathname is just '/'
       url.pathname = `/${preferredLocale}${pathname === '/' ? '' : pathname}`
       return NextResponse.redirect(url)
     }
   }
 
-  // --- Supabase Authentication Logic (for front-end routes) ---
+  // --- Supabase Authentication Logic ---
   return await updateSession(request)
+}
+
+function pathnameStartsWith(pathname: string, prefix: string) {
+  return pathname.startsWith(prefix);
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
+

@@ -3,7 +3,7 @@
 import nodemailer from 'nodemailer'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth/auth.config'
 
 export async function sendProposalEmail(leadId: string, subject: string, htmlContent: string) {
   try {
