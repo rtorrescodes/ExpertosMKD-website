@@ -2,11 +2,12 @@ import { prisma } from "@/lib/prisma/client";
 import Link from "next/link";
 import { Package } from "lucide-react";
 
-export default async function StoreHomepage({ params }: { params: { tenant: string } }) {
-  const tenant = await prisma.tenant.findUnique({ where: { subdomain: params.tenant } });
+export default async function StoreHomepage(props: { params: Promise<{ tenant: string }> }) {
+  const { tenant } = await props.params;
+  const tenantData = await prisma.tenant.findUnique({ where: { subdomain: tenant } });
   
   const products = await prisma.ecomProduct.findMany({
-    where: { tenantId: tenant?.id, isPublished: true },
+    where: { tenantId: tenantData?.id, isPublished: true },
     include: { variants: true },
     orderBy: { createdAt: 'desc' }
   });
@@ -17,7 +18,7 @@ export default async function StoreHomepage({ params }: { params: { tenant: stri
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {products.map(p => (
-          <Link key={p.id} href={`/site/${params.tenant}/store/p/${p.handle}`} className="group cursor-pointer">
+          <Link key={p.id} href={`/site/${tenant}/store/p/${p.handle}`} className="group cursor-pointer">
             <div className="aspect-[4/5] bg-gray-100 rounded-2xl mb-4 overflow-hidden flex items-center justify-center relative group-hover:shadow-md transition-all">
               {p.imageUrl ? (
                 <img src={p.imageUrl} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />

@@ -27,8 +27,8 @@ export default async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
   
-  // Skip i18n for internal routes
-  const isInternal = pathname.startsWith('/admin') || pathname.startsWith('/api') || pathname.startsWith('/hub')
+  // Skip i18n for internal routes and tenant routes
+  const isInternal = pathname.startsWith('/admin') || pathname.startsWith('/api') || pathname.startsWith('/hub') || pathname.startsWith('/site')
 
   // --- NextAuth Protection for Admin Routes ---
   if (pathname.startsWith('/admin')) {

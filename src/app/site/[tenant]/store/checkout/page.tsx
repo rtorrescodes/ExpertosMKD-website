@@ -6,7 +6,10 @@ import { createOrder } from "@/actions/ecommerce";
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 
-export default function CheckoutPage({ params }: { params: { tenant: string } }) {
+import { use } from "react";
+
+export default function CheckoutPage(props: { params: Promise<{ tenant: string }> }) {
+  const { tenant } = use(props.params);
   const { items, total, clearCart } = useStoreCart();
   
   const [customerName, setCustomerName] = useState("");
@@ -24,7 +27,7 @@ export default function CheckoutPage({ params }: { params: { tenant: string } })
     setErrorMsg("");
 
     const res = await createOrder({
-      tenantSubdomain: params.tenant,
+      tenantSubdomain: tenant,
       customerName,
       customerEmail,
       cartItems: items.map(i => ({ variantId: i.variantId, quantity: i.quantity }))
@@ -49,7 +52,7 @@ export default function CheckoutPage({ params }: { params: { tenant: string } })
           Tu orden <strong>#{successOrderId}</strong> ha sido procesada con éxito.<br/>
           Te enviaremos los detalles y actualizaciones a <strong>{customerEmail}</strong>.
         </p>
-        <Link href={`/site/${params.tenant}/store`} className="px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800">
+        <Link href={`/site/${tenant}/store`} className="px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800">
           Volver a la Tienda
         </Link>
       </div>
@@ -60,7 +63,7 @@ export default function CheckoutPage({ params }: { params: { tenant: string } })
     return (
       <div className="text-center py-24">
         <h2 className="text-2xl font-bold mb-4">Tu carrito está vacío</h2>
-        <Link href={`/site/${params.tenant}/store`} className="text-blue-600 font-medium hover:underline">Continuar comprando</Link>
+        <Link href={`/site/${tenant}/store`} className="text-blue-600 font-medium hover:underline">Continuar comprando</Link>
       </div>
     );
   }
