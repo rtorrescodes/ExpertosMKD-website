@@ -12,32 +12,40 @@ export default async function InventoryDashboard(props: {
   
   if (!session?.user?.tenantId) redirect("/admin/login");
 
-  // Fetch Inventory Items
+  // Fetch Inventory Items with their stocks across all warehouses
   const items = await prisma.invItem.findMany({
     where: { tenantId: session.user.tenantId },
-    orderBy: { name: "asc" }
+    orderBy: { name: "asc" },
+    include: {
+      stocks: true
+    }
   });
 
-  // Fetch recent movements for analytics if needed
+  const warehouses = await prisma.invWarehouse.findMany({
+    where: { tenantId: session.user.tenantId },
+    orderBy: { createdAt: "asc" }
+  });
+
   const movements = await prisma.invMovement.findMany({
     where: { tenantId: session.user.tenantId },
     orderBy: { createdAt: "desc" },
     take: 50,
-    include: { item: true }
+    include: { item: true, warehouse: true }
   });
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold leading-6 text-white">Almacén e Inventario (Kardex)</h1>
+        <h1 className="text-2xl font-bold leading-6 text-white">Almacenes y Kardex</h1>
         <p className="mt-2 text-sm text-slate-400">
-          Administra tu inventario, ajusta existencias y mantén el control de tus insumos o mercancías.
+          Administra múltiples ubicaciones, ajusta existencias y mantén el control de tus insumos o mercancías.
         </p>
       </div>
 
       <InventoryClient 
         items={JSON.parse(JSON.stringify(items))} 
         movements={JSON.parse(JSON.stringify(movements))} 
+        warehouses={JSON.parse(JSON.stringify(warehouses))}
       />
     </div>
   );

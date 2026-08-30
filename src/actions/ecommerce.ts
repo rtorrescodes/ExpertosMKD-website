@@ -65,6 +65,12 @@ export async function createOrder(data: {
     if (!tenant) throw new Error("Tenant no encontrado");
 
     // Process order in a transaction to safely deduct inventory
+      const defaultWarehouse = await prisma.invWarehouse.findFirst({
+        where: { tenantId: tenant.id, isDefault: true }
+      }) || await prisma.invWarehouse.findFirst({
+        where: { tenantId: tenant.id }
+      });
+
       const order = await prisma.$transaction(async (tx) => {
         let subtotal = 0;
         const orderItemsData = [];
@@ -87,18 +93,33 @@ export async function createOrder(data: {
             data: { inventoryQuantity: variant.inventoryQuantity - item.quantity }
           });
 
-          // Prepare Inv Movement if linked
-          if (variant.invItem) {
+          // Prepare Inv Movement if linked and warehouse exists
+          if (variant.invItem && defaultWarehouse) {
             invMovementsData.push({
               itemId: variant.invItem.id,
               quantity: item.quantity,
-              tenantId: tenant.id
+              tenantId: tenant.id,
+              warehouseId: defaultWarehouse.id
             });
-            // Deduct InvItem stock
-            await tx.invItem.update({
-              where: { id: variant.invItem.id },
-              data: { currentStock: { decrement: item.quantity } }
+            
+            const existingStock = await tx.invStock.findUnique({
+              where: { itemId_warehouseId: { itemId: variant.invItem.id, warehouseId: defaultWarehouse.id } }
             });
+
+            if (existingStock) {
+              await tx.invStock.update({
+                where: { id: existingStock.id },
+                data: { quantity: { decrement: item.quantity } }
+              });
+            } else {
+              await tx.invStock.create({
+                data: {
+                  itemId: variant.invItem.id,
+                  warehouseId: defaultWarehouse.id,
+                  quantity: -item.quantity
+                }
+              });
+            }
           }
 
           const lineTotal = Number(variant.price) * item.quantity;
@@ -139,6 +160,7 @@ export async function createOrder(data: {
           data: invMovementsData.map(m => ({
             tenantId: m.tenantId,
             itemId: m.itemId,
+            warehouseId: m.warehouseId,
             type: "OUT",
             quantity: m.quantity,
             reason: `Venta online #${newOrder.displayId}`,

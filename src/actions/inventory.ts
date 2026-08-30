@@ -13,6 +13,34 @@ async function requireTenantUser() {
   return session.user;
 }
 
+export async function createWarehouse(data: { name: string; location?: string; isDefault?: boolean }) {
+  try {
+    const user = await requireTenantUser();
+    
+    // Si es el primero o se marcó como default, quitamos el default a los demás
+    if (data.isDefault) {
+      await prisma.invWarehouse.updateMany({
+        where: { tenantId: user.tenantId },
+        data: { isDefault: false }
+      });
+    }
+
+    await prisma.invWarehouse.create({
+      data: {
+        tenantId: user.tenantId,
+        name: data.name,
+        location: data.location,
+        isDefault: data.isDefault || false
+      }
+    });
+
+    revalidatePath(`/site/[tenant]/dashboard/inventory`, "layout");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
 export async function createInvItem(data: { name: string; sku?: string; minStockAlert: number; unitCost: number }) {
   try {
     const user = await requireTenantUser();
@@ -32,22 +60,22 @@ export async function createInvItem(data: { name: string; sku?: string; minStock
   }
 }
 
-export async function createInvMovement(data: { itemId: string; type: string; quantity: number; reason: string; referenceId?: string }) {
+export async function createInvMovement(data: { itemId: string; warehouseId: string; type: string; quantity: number; reason: string; referenceId?: string }) {
   try {
     const user = await requireTenantUser();
     
-    // Verify item belongs to tenant
     const item = await prisma.invItem.findFirst({
       where: { id: data.itemId, tenantId: user.tenantId }
     });
     if (!item) throw new Error("Artículo no encontrado");
 
     await prisma.$transaction(async (tx) => {
-      // Create movement
+      // 1. Create movement
       await tx.invMovement.create({
         data: {
           tenantId: user.tenantId,
           itemId: data.itemId,
+          warehouseId: data.warehouseId,
           type: data.type,
           quantity: data.quantity,
           reason: data.reason,
@@ -55,17 +83,29 @@ export async function createInvMovement(data: { itemId: string; type: string; qu
         }
       });
 
-      // Update current stock
-      const stockChange = data.type === "IN" ? data.quantity : -data.quantity; // OUT and ADJUSTMENT decrement (assuming adjustments are losses for now, or you can do signed adjustments)
+      // 2. Upsert stock
+      const stockChange = data.type === "IN" ? data.quantity : -data.quantity;
       
-      await tx.invItem.update({
-        where: { id: data.itemId },
-        data: {
-          currentStock: {
-            increment: stockChange
-          }
+      const existingStock = await tx.invStock.findUnique({
+        where: {
+          itemId_warehouseId: { itemId: data.itemId, warehouseId: data.warehouseId }
         }
       });
+
+      if (existingStock) {
+        await tx.invStock.update({
+          where: { id: existingStock.id },
+          data: { quantity: { increment: stockChange } }
+        });
+      } else {
+        await tx.invStock.create({
+          data: {
+            itemId: data.itemId,
+            warehouseId: data.warehouseId,
+            quantity: stockChange
+          }
+        });
+      }
     });
 
     revalidatePath(`/site/[tenant]/dashboard/inventory`, "layout");
@@ -76,7 +116,7 @@ export async function createInvMovement(data: { itemId: string; type: string; qu
   }
 }
 
-export async function createInvPurchase(data: { supplierId: string; totalAmount: number; items: { itemId: string, quantity: number, unitCost: number, total: number }[] }) {
+export async function createInvPurchase(data: { supplierId: string; warehouseId: string; totalAmount: number; items: { itemId: string, quantity: number, unitCost: number, total: number }[] }) {
   try {
     const user = await requireTenantUser();
     
@@ -85,7 +125,7 @@ export async function createInvPurchase(data: { supplierId: string; totalAmount:
         tenantId: user.tenantId,
         supplierId: data.supplierId,
         totalAmount: data.totalAmount,
-        status: "RECEIVED", // We assume it's received for immediate effect MVP
+        status: "RECEIVED",
         items: {
           create: data.items.map(i => ({
             itemId: i.itemId,
@@ -97,10 +137,10 @@ export async function createInvPurchase(data: { supplierId: string; totalAmount:
       }
     });
 
-    // Automatically generate IN movements for the received items
     for (const item of data.items) {
       await createInvMovement({
         itemId: item.itemId,
+        warehouseId: data.warehouseId,
         type: "IN",
         quantity: item.quantity,
         reason: `Compra #${purchase.id.slice(-5).toUpperCase()}`,
@@ -108,13 +148,7 @@ export async function createInvPurchase(data: { supplierId: string; totalAmount:
       });
     }
 
-    // Trigger ERP Expense
-    // We import locally to avoid circular dependencies if erp imports inventory later
-    const { registerAutomaticIncome } = await import("./erp");
-    // Actually, we need an ERP expense trigger. Let's add that to erp.ts later, but for now we can do it via createTransaction directly
     const { createTransaction } = await import("./erp");
-    
-    // We need an account ID. Find the default one.
     const account = await prisma.erpAccount.findFirst({ where: { tenantId: user.tenantId }});
     if (account) {
       await createTransaction({

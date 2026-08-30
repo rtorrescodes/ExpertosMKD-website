@@ -203,10 +203,11 @@ model Tenant {
   erpTransactions ErpTransaction[]
   erpInvoices     ErpInvoice[]
 
-  invSuppliers InvSupplier[]
-  invItems     InvItem[]
-  invMovements InvMovement[]
-  invPurchases InvPurchase[]
+  invSuppliers  InvSupplier[]
+  invItems      InvItem[]
+  invMovements  InvMovement[]
+  invPurchases  InvPurchase[]
+  invWarehouses InvWarehouse[]
 
   @@index([status])
   @@index([subdomain])
@@ -643,7 +644,6 @@ model InvItem {
   sku      String?
   barcode  String?
 
-  currentStock  Int     @default(0)
   minStockAlert Int     @default(5)
   unitCost      Decimal @default(0) // Costo promedio o de última compra
 
@@ -655,14 +655,16 @@ model InvItem {
 
   tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   ecomVariant   EcomVariant?      @relation(fields: [ecomVariantId], references: [id], onDelete: SetNull)
+  stocks        InvStock[]
   movements     InvMovement[]
   purchaseItems InvPurchaseItem[]
 }
 
 model InvMovement {
-  id       String @id @default(cuid())
-  tenantId String
-  itemId   String
+  id          String @id @default(cuid())
+  tenantId    String
+  itemId      String
+  warehouseId String
 
   type     String // "IN", "OUT", "ADJUSTMENT"
   quantity Int // Absolute value of movement
@@ -672,8 +674,9 @@ model InvMovement {
 
   createdAt DateTime @default(now())
 
-  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  item   InvItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  item      InvItem      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  warehouse InvWarehouse @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
 }
 
 model InvPurchase {
@@ -706,4 +709,33 @@ model InvPurchaseItem {
 
   purchase InvPurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
   item     InvItem     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+}
+
+model InvWarehouse {
+  id        String  @id @default(cuid())
+  tenantId  String
+  name      String
+  location  String?
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  stocks    InvStock[]
+  movements InvMovement[]
+}
+
+model InvStock {
+  id          String @id @default(cuid())
+  itemId      String
+  warehouseId String
+  quantity    Int    @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  item      InvItem      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  warehouse InvWarehouse @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+
+  @@unique([itemId, warehouseId])
 }
