@@ -20,12 +20,15 @@
   - Interfaz de administración de módulos (Toggles) agregada a la tabla del Hub.
   - Acción restringida solo para `SUPER_ADMIN`.
   - Impacto visual instantáneo en el menú lateral de los Tenants.
-- **MVP 6 (Módulo de CRM basado en Twenty):** PLANIFICADO. En espera de inicio.
+- **MVP 6 (Módulo de CRM basado en Twenty):** COMPLETADO.
+  - Modelos en Prisma aislados con zero-trust multitenancy (`CrmCompany`, `CrmPerson`, `CrmOpportunity`, `CrmNote`).
+  - Lógica de arrastrar y soltar optimista con `@hello-pangea/dnd` para el Kanban Board.
+  - Vistas dedicadas y condicionales (FeatureFlags) en el Sidebar.
+  - Scripts generados y schema.prisma de ExpertosMKD restaurado (se añadieron los de Celeritas sin destruir los anteriores).
 
 ## Próximos Pasos (Inmediatos)
-1. Iniciar ciclo de Specify para MVP 6 (CRM).
-2. Analizar repositorio de Twenty para comprender arquitectura visual y estructuras de datos.
-3. Extender `schema.prisma` para soportar Companies, People, Opportunities y Activities.
+1. Iniciar **MVP 7: Módulo de Cotizador** usando los procesos y ciclo Spec-Driven.
+2. Explorar separación completa de Turborepo si se decide escalar el código físicamente (aunque actualmente Next.js rutea todo internamente y seguro en la branch).
 
 ## Decisiones Arquitectónicas Recientes
 - Se movió el ecosistema de tenants a `src/app/site/[tenant]` y se ajustó `proxy.ts` para resolver el conflicto del App Router entre `/[lang]` y `/[tenant]`.

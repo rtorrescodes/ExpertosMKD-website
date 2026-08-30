@@ -29,7 +29,11 @@ export function TenantSidebar({
 
   // Dynamic modules
   if (featureFlags?.crm) {
-    links.push({ name: "CRM", href: "/dashboard/crm", icon: Briefcase });
+    links.push(
+      { name: "Empresas", href: "/dashboard/crm/companies", icon: Briefcase },
+      { name: "Contactos", href: "/dashboard/crm/people", icon: Users },
+      { name: "Oportunidades", href: "/dashboard/crm/opportunities", icon: CheckSquare }
+    );
   }
   if (featureFlags?.ecommerce) {
     links.push({ name: "Tienda", href: "/dashboard/ecommerce", icon: ShoppingCart });
@@ -38,7 +42,7 @@ export function TenantSidebar({
     links.push({ name: "Citas", href: "/dashboard/appointments", icon: Calendar });
   }
   if (featureFlags?.projects) {
-    links.push({ name: "Proyectos", href: "/dashboard/projects", icon: CheckSquare });
+    links.push({ name: "Proyectos", href: "/dashboard/projects", icon: CheckSquare }); // Consider changing icon
   }
 
   // Always at the bottom

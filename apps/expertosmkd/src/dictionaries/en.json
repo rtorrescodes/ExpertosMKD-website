@@ -1,0 +1,153 @@
+{
+  "nav": {
+    "services": "Services",
+    "methodology": "Methodology",
+    "blog": "Blog",
+    "audit": "Free Audit",
+    "language": "ES"
+  },
+  "hero": {
+    "badge": "Premium Digital Agency",
+    "title1": "Websites that sell.",
+    "title2": "Marketing that scales.",
+    "rotating_phrases": [
+      { "text": "High-performance ", "highlight": "websites." },
+      { "text": "Marketing ", "highlight": "that scales." },
+      { "text": "Data-driven ", "highlight": "strategies." },
+      { "text": "Intelligent ", "highlight": "automation." },
+      { "text": "Growth ", "highlight": "without limits." }
+    ],
+    "description": "ExpertosMKD is the full-stack agency for businesses that demand results. We design high-converting digital ecosystems and data-driven campaigns to multiply your ROI.",
+    "cta_audit": "Request Analysis",
+    "cta_services": "Our Services"
+  },
+  "web_dev": {
+    "title": "Just looking for a website?",
+    "subtitle": "Much more than simple web design",
+    "description": "We don't do 'brochure' sites. We build digital ecosystems with enterprise-grade security, deep SEO optimization, and architectures designed 100% to sell. If you want to truly compete, we'll build your foundation.",
+    "cta": "I Want a Website that Sells"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Complete solutions to dominate the digital market.",
+    "web_design": {
+      "title": "Web Design & E-commerce",
+      "desc": "Fast, responsive sites designed specifically to maximize conversions."
+    },
+    "hosting": {
+      "title": "Premium Hosting",
+      "desc": "Ultra-fast and secure servers so your business never stops."
+    },
+    "campaigns": {
+      "title": "Growth Marketing & Ads",
+      "desc": "Advanced paid campaigns (Google & Meta) and automated funnels focused on generating leads and scaling your revenue."
+    },
+    "social": {
+      "title": "Social Media & CM",
+      "desc": "We build community and brand authority with high-value content."
+    },
+    "consulting": {
+      "title": "Business Review",
+      "desc": "We analyze your commercial processes and give you the exact roadmap to scale."
+    },
+    "apps": {
+      "title": "App & Web Systems Development",
+      "desc": "We build mobile apps and complex web platforms tailored to your operations."
+    },
+    "crm_ai": {
+      "title": "Custom CRMs with AI",
+      "desc": "Custom management systems with AI-driven lead automation and qualification."
+    },
+    "seo": {
+      "title": "Advanced SEO",
+      "desc": "Organic ranking on Google, technical SEO, Linkbuilding, and local optimization."
+    },
+    "email": {
+      "title": "Email Marketing Automations",
+      "desc": "Automated sequences and email campaigns that nurture leads and retain customers."
+    },
+    "cro": {
+      "title": "CRO Optimization",
+      "desc": "A/B testing, heatmaps, and UX analysis to maximize the conversion rate of every visitor."
+    },
+    "content": {
+      "title": "Content Marketing & Copy",
+      "desc": "Content strategies and persuasive copywriting designed specifically to sell."
+    }
+  },
+  "methodology": {
+    "title": "Why ExpertosMKD",
+    "step1": "Market Audit",
+    "step1_desc": "We analyze your competition and current funnels to find the exact revenue leaks and opportunities.",
+    "step2": "Strategic Engineering",
+    "step2_desc": "We chart a customized action plan with mathematical projections and B2B-oriented conversion architecture.",
+    "step3": "High-Level Execution",
+    "step3_desc": "We develop your systems, design the web platform, and launch scalable automated campaigns.",
+    "step4": "Continuous Optimization",
+    "step4_desc": "We measure, iterate, and scale results based on pure real-time data, not assumptions."
+  },
+  "blog": {
+    "title": "Latest Articles",
+    "subtitle": "Learn from digital marketing experts.",
+    "read_more": "Read Article"
+  },
+  "contact": {
+    "title": "Elevate your business today.",
+    "desc": "Leave your details. A strategist will evaluate your situation and propose an action plan with no commitment.",
+    "name": "Your Name",
+    "email": "Your Email",
+    "challenge": "What's your biggest challenge right now?",
+    "submit": "Submit Request"
+  },
+  "footer": {
+    "rights": "© 2026 ExpertosMKD. All rights reserved.",
+    "description": "We accelerate the growth of B2B and SaaS companies through conversion engineering and data strategies.",
+    "services_title": "Services",
+    "company_title": "Company",
+    "legal_title": "Legal",
+    "made_with": "Made with ❤ in Next.js",
+    "services": {
+      "web": "Pro Web Development",
+      "leads": "B2B Lead Generation",
+      "seo": "SEO/SEM Strategy",
+      "ai": "AI Automation"
+    },
+    "company": {
+      "about": "About Us",
+      "cases": "Case Studies",
+      "blog": "Blog",
+      "contact": "Contact",
+      "partners": "Partners"
+    },
+    "legal": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    }
+  },
+  "domain_search": {
+    "title": "Secure your company's name",
+    "subtitle": "Find your ideal domain and reserve your web presence before someone else does.",
+    "placeholder": "example.com",
+    "button_search": "Search",
+    "loading": "Checking...",
+    "available": "Congratulations! The domain is available.",
+    "unavailable": "Sorry, the domain is already taken.",
+    "cta_reserve": "Reserve Now",
+    "error": "There was an error checking, please try again."
+  },
+  "legal_content": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "content": "Last updated: August 14, 2026\n\nAt ExpertosMKD (\"we\", \"our\", or \"the Agency\"), we deeply value your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or interact with our services.\n\n1. Information Collection\nWe collect personal information (such as name, email, company, and business challenges) voluntarily provided through our contact forms, as well as technical data (IP addresses, browser type, operating system) automatically collected via cookies for analytical purposes.\n\n2. Use of Information\nThe collected data is strictly used to: provide marketing audits, customize our B2B proposals, improve user experience (UX) on our platform, and communicate directly regarding topics of interest. We do not sell or rent your information to third parties.\n\n3. Data Security\nWe implement enterprise-grade security measures, encryption, and restricted access protocols to prevent unauthorized access, alteration, or destruction of your data.\n\n4. Jurisdiction and Rights\nYou have the right to access, correct, or delete your data at any time by contacting us. Any dispute arising from this notice will be resolved under the laws in force in [City/Country]."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "content": "Last updated: August 14, 2026\n\nWelcome to ExpertosMKD. By using this website and contracting our web development, SEO, or digital marketing services, you agree to be bound by the following terms and conditions:\n\n1. Description of Services\nExpertosMKD acts as a B2B consulting and execution agency. Organic positioning (SEO) or advertising (Ads) results depend on multiple market variables and third-party algorithms, so projections are strategic estimates, not absolute contractual guarantees.\n\n2. Intellectual Property\nAll code, UI/UX design, strategies, and texts developed during a project belong to ExpertosMKD until the agreed fees are fully paid, at which point usage rights are transferred to the client.\n\n3. Limitation of Liability\nIn no event shall ExpertosMKD be liable for indirect, incidental damages, or loss of profits resulting from the use or inability to use our services, or due to penalties from third-party platforms (such as Google or Meta).\n\n4. Modifications\nWe reserve the right to modify these terms at any time. Continued use of the services implies acceptance of the new terms.\n\n5. Jurisdiction\nThese terms are governed by the applicable laws in [City/Country]."
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "content": "Last updated: August 14, 2026\n\nThis website uses cookies and similar technologies to ensure technical functioning and analyze traffic to optimize our marketing strategy.\n\n1. What are cookies?\nThey are small text files stored on your device when you visit a website. They help remember your preferences and understand how you interact with the content.\n\n2. Types of Cookies We Use\n- Strictly Necessary Cookies: Essential for basic navigation (e.g., maintaining the selected language).\n- Performance and Analytics Cookies: Used (via tools like Google Analytics) to count visits, traffic sources, and improve site performance. They are anonymous.\n- Marketing Cookies: Used to track the effectiveness of our B2B campaigns and offer relevant content.\n\n3. Cookie Control\nYou can configure your browser at any time to totally or partially reject the installation of cookies, although this could affect the user experience on the platform."
+    }
+  }
+}
