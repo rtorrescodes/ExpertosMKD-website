@@ -10,7 +10,8 @@ import {
   ShoppingCart, 
   Calendar, 
   CheckSquare,
-  FileText
+  FileText,
+  Wallet
 } from "lucide-react";
 
 export function TenantSidebar({ 
@@ -52,6 +53,9 @@ export function TenantSidebar({
   if (featureFlags?.ecommerce) {
     links.push({ name: "Tienda", href: `/site/${tenantSubdomain}/dashboard/ecommerce`, icon: ShoppingCart });
   }
+
+  // Always show ERP for now, or flag it if preferred
+  links.push({ name: "ERP y Finanzas", href: `/site/${tenantSubdomain}/dashboard/erp`, icon: Wallet });
 
   // Always at the bottom
   links.push({ name: "Configuración", href: `/site/${tenantSubdomain}/dashboard/settings`, icon: Settings });

@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth.config";
 import { prisma } from "@/lib/prisma/client";
 import { revalidatePath } from "next/cache";
+import { registerAutomaticIncome } from "./erp";
 
 async function requireTenantUser() {
   const session = await getServerSession(authOptions);
@@ -208,6 +209,9 @@ export async function createBooking(data: {
       }
     });
 
+    // ERP Trigger
+    await registerAutomaticIncome(tenant.id, Number(eventType.price || 0), "APPT", booking.id, `Cita Agendada: ${eventType.title}`);
+
     return { success: true, bookingId: booking.id };
   } catch (error: any) {
     console.error(error);
@@ -241,7 +245,7 @@ export async function createManualBooking(data: {
   try {
     const user = await requireTenantUser();
     
-    await prisma.apptBooking.create({
+    const booking = await prisma.apptBooking.create({
       data: {
         tenantId: user.tenantId!,
         eventTypeId: data.eventTypeId,
@@ -253,6 +257,15 @@ export async function createManualBooking(data: {
         status: "CONFIRMED",
       }
     });
+
+    // We need the eventType to get the price
+    const eventType = await prisma.apptEventType.findUnique({
+      where: { id: data.eventTypeId }
+    });
+
+    if (eventType) {
+      await registerAutomaticIncome(user.tenantId!, Number(eventType.price || 0), "APPT", booking.id, `Cita Manual: ${eventType.title}`);
+    }
 
     revalidatePath("/site/[tenant]/dashboard/appointments", "page");
     return { success: true };

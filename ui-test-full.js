@@ -25,7 +25,8 @@ const { chromium } = require('playwright');
       'http://localhost:3000/site/qa-demo/dashboard/appointments',
       'http://localhost:3000/site/qa-demo/dashboard/projects',
       'http://localhost:3000/site/qa-demo/dashboard/ecommerce',
-      'http://localhost:3000/site/qa-demo/dashboard/appointments/event-types'
+      'http://localhost:3000/site/qa-demo/dashboard/appointments/event-types',
+      'http://localhost:3000/site/qa-demo/dashboard/erp'
     ];
 
     for (const url of urlsToTest) {

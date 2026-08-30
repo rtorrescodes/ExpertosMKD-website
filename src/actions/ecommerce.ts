@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth.config";
 import { prisma } from "@/lib/prisma/client";
 import { revalidatePath } from "next/cache";
+import { registerAutomaticIncome } from "./erp";
 
 async function requireTenantUser() {
   const session = await getServerSession(authOptions);
@@ -119,6 +120,9 @@ export async function createOrder(data: {
 
       return newOrder;
     });
+
+    // ERP Trigger
+    await registerAutomaticIncome(tenant.id, Number(order.total), "ECOM", order.id, `Venta en línea #${order.displayId}`);
 
     return { success: true, orderId: order.displayId };
   } catch (error: any) {

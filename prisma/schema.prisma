@@ -199,6 +199,10 @@ model Tenant {
   ecomProducts   EcomProduct[]
   ecomOrders     EcomOrder[]
 
+  erpAccounts     ErpAccount[]
+  erpTransactions ErpTransaction[]
+  erpInvoices     ErpInvoice[]
+
   @@index([status])
   @@index([subdomain])
 }
@@ -342,9 +346,10 @@ model CrmQuote {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  items      CrmQuoteItem[]
-  activities CrmActivity[]
-  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items           CrmQuoteItem[]
+  activities      CrmActivity[]
+  erpTransactions ErpTransaction[]
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
 model CrmQuoteItem {
@@ -407,9 +412,10 @@ model ApptBooking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  eventType ApptEventType @relation(fields: [eventTypeId], references: [id])
-  person    CrmPerson?    @relation(fields: [personId], references: [id])
-  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  eventType       ApptEventType    @relation(fields: [eventTypeId], references: [id])
+  person          CrmPerson?       @relation(fields: [personId], references: [id])
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  erpTransactions ErpTransaction[]
 
   @@index([startTime])
 }
@@ -518,9 +524,10 @@ model EcomOrder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  items  EcomOrderItem[]
-  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  person CrmPerson?      @relation(fields: [personId], references: [id])
+  items           EcomOrderItem[]
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person          CrmPerson?       @relation(fields: [personId], references: [id])
+  erpTransactions ErpTransaction[]
 }
 
 model EcomOrderItem {
@@ -534,4 +541,71 @@ model EcomOrderItem {
 
   order   EcomOrder    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   variant EcomVariant? @relation(fields: [variantId], references: [id])
+}
+
+// ==========================================
+// MÓDULO ERP Y FINANZAS
+// ==========================================
+
+model ErpAccount {
+  id       String  @id @default(cuid())
+  tenantId String
+  name     String // Ej. "Banamex USD", "Stripe", "Caja Chica"
+  currency String  @default("MXN")
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  transactions ErpTransaction[]
+}
+
+model ErpTransaction {
+  id        String @id @default(cuid())
+  tenantId  String
+  accountId String
+
+  type     String // "INCOME", "EXPENSE"
+  status   String @default("PENDING") // PENDING, PAID, CANCELLED
+  category String @default("UNCATEGORIZED") // SOFTWARE, PAYROLL, SALES, etc.
+
+  amount      Decimal  @default(0)
+  description String?  @db.Text
+  date        DateTime @default(now())
+
+  // Referencias polimórficas (Opcionales) para conectar con otros módulos
+  ecomOrderId   String?
+  apptBookingId String?
+  crmQuoteId    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  account     ErpAccount   @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  ecomOrder   EcomOrder?   @relation(fields: [ecomOrderId], references: [id], onDelete: SetNull)
+  apptBooking ApptBooking? @relation(fields: [apptBookingId], references: [id], onDelete: SetNull)
+  crmQuote    CrmQuote?    @relation(fields: [crmQuoteId], references: [id], onDelete: SetNull)
+  invoice     ErpInvoice?
+}
+
+model ErpInvoice {
+  id            String @id @default(cuid())
+  tenantId      String
+  transactionId String @unique
+
+  status String @default("DRAFT") // DRAFT, ISSUED, PAID, CANCELLED
+
+  customerName    String
+  customerTaxId   String? // RFC / NIT
+  customerAddress String? @db.Text
+
+  pdfUrl String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  transaction ErpTransaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 }

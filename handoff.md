@@ -1,75 +1,27 @@
-# Handoff - Día 1 - Fundación Técnica
-# Handoff - Celeritas
+# Handoff - Fin de Sesión
 
-## Estado Actual
-- **MVP 0 (Fundación Técnica):** COMPLETADO.
-- **MVP 1 (Hub Global de Administración):** COMPLETADO.
-- **MVP 2 (Login y Onboarding del Tenant):** COMPLETADO.
-  - Generación de token y validación (Onboarding).
-  - Flujo de creación de contraseña inicial (bcrypt).
-  - Protección de Login multi-tenant (Zero Trust en authorize).
-- **MVP 3 (Dashboard Base del Tenant):** COMPLETADO.
-  - Sidebar reactivo a feature flags JSON.
-  - Header con botón de logout y perfil.
-  - Lectura de métricas base y bitácora (AuditLogs).
-- **MVP 4 (Gestión de Usuarios del Tenant):** COMPLETADO.
-  - Tabla de usuarios (`/dashboard/users`).
-  - Modal de invitación y envío de email integrado.
-  - Gestión de roles con Server Actions y validación de permisos.
-- **MVP 5 (Feature Flags y Módulos Opcionales):** COMPLETADO.
-  - Interfaz de administración de módulos (Toggles) agregada a la tabla del Hub.
-  - Acción restringida solo para `SUPER_ADMIN`.
-  - Impacto visual instantáneo en el menú lateral de los Tenants.
-- **MVP 6 (Módulo de CRM basado en Twenty):** COMPLETADO.
-  - Modelos en Prisma aislados con zero-trust multitenancy (`CrmCompany`, `CrmPerson`, `CrmOpportunity`, `CrmNote`).
-  - Lógica de arrastrar y soltar optimista con `@hello-pangea/dnd` para el Kanban Board.
-  - Vistas dedicadas y condicionales (FeatureFlags) en el Sidebar.
-  - Scripts generados y schema.prisma de ExpertosMKD restaurado (se añadieron los de Celeritas sin destruir los anteriores).
+## 1. Objetivo de la Sesión
+Finalizar la estabilización profunda de Celeritas Platform MVP (Fase 3: CRM, Tienda, Proyectos, Citas, Usuarios) garantizando una experiencia libre de errores (Zero 500s), integrando filtros de búsqueda en tiempo real (Client-Side Search) en todas las tablas y habilitando la creación manual de citas desde el grid interactivo del calendario.
 
-- **MVP 7 (Módulo de Cotizador):** COMPLETADO.
-  - Interfaz de "Quote Builder" interactiva (Split-screen React view).
-  - Tres plantillas de renderizado integradas (MODERN, CLASSIC, MINIMALIST).
-  - Selector inteligente (CRM contact autocompletion vs Manual Mode).
-  - Link público responsivo (`/quote/[token]`) optimizado para conversión en móviles y WhatsApp.
-  - Server actions transaccionales e integración nativa con el timeline del cliente (`CrmActivity`).
+## 2. Estado Actual
+- **Estabilidad Total:** El sistema pasó exitosamente la auditoría automatizada con Playwright (`ui-test-full.js`). Se resolvieron de raíz múltiples fallos de hidratación y serialización provocados por el retorno de instancias `Decimal` de Prisma en las Server Actions de Next.js App Router.
+- **Buscadores Integrados:** Todos los módulos principales (Empresas, Personas, Kanban de Oportunidades, Tienda, Órdenes, Usuarios) ahora cuentan con un motor de búsqueda instantáneo sin recarga de página.
+- **Calendario (Appointments):** Se rediseñó `AppointmentsClient.tsx` para permitir agendamiento manual. El grid reacciona a clics para pre-llenar fecha y hora, soportando saltos de 5 minutos (10:45 AM, 12:40 PM, etc.).
 
-- **MVP 8 (Módulo de Control de Citas):** COMPLETADO.
-  - Clon arquitectónico de cal.com universal para cualquier nicho.
-  - Algoritmo de "Available Slots" programado en Server Actions con prevención de doble reserva en tiempo real (Time Overlap Verification).
-  - UI Administrativa de "Event Types" (Servicios) y Dashboard de próximas citas.
-  - Booking Portal (Ruta pública `/book/[slug]`) con wizard de 3 pasos (Fecha > Hora > Datos).
+## 3. Archivos y Cambios de la Sesión
+- `src/actions/crm.ts`, `src/actions/appointments.ts`: Limpieza estricta de objetos de retorno para evitar pasar `Decimal` o instancias completas de Prisma hacia componentes del cliente. 
+- `src/app/site/[tenant]/dashboard/crm/opportunities/page.tsx`: Inyección correcta de `companies` y `people` para reparar crasheos de menús desplegables.
+- `src/app/site/[tenant]/dashboard/appointments/page.tsx`: Se añadió la consulta `eventTypes` para alimentar el modal de nueva cita.
+- `src/components/dashboard/crm/*` y `src/components/dashboard/ecommerce/*`: Implementación del hook `useState` de `searchTerm` y aplicación lógica de `.filter()`.
+- `src/components/dashboard/appointments/AppointmentsClient.tsx`: Reescrutura completa agregando el modal de `isCreating`, el formulario de fecha/hora granular y el gestor de eventos de clic en el calendario semanal.
 
-- **MVP 9 (Módulo de Control de Proyectos):** COMPLETADO.
-  - Vistas duales (Layout persistente de Tabs) para visualizar el mismo proyecto como Kanban o como Gantt.
-  - **Kanban Board:** Reutilización de `dnd` para drag and drop de tareas interactivas entre columnas (TODO, IN PROGRESS, REVIEW, DONE).
-  - **Diagrama de Gantt Nativo:** Construido en puro CSS Grid sin dependencias pesadas. Mapea `startDate` y `dueDate` dibujando barras temporales en un eje X interactivo que abarca de manera dinámica desde el inicio de la primera tarea hasta el fin de la última.
-  - Roles: Las tareas se pueden asignar directamente a los Empleados (Usuarios) dados de alta en el Tenant.
+## 4. Intentos Fallidos y Lecciones Aprendidas
+- **Serialización en Server Actions (Next.js 16 / React 19):** Intentar regresar todo el modelo de Prisma (ej. `return { success: true, opportunity }`) desde un Server Action detiene la aplicación abruptamente si el modelo contiene campos `Decimal`, ya que Next.js no sabe cómo serializarlos por la red de forma nativa. La solución definitiva es no devolver la entidad cruda (solo devolver `{ success: true }` y usar `router.refresh()`), o mapear el campo `Decimal` a `Number` explícitamente antes del `return`.
+- **Inyección de Scripts (RegEx / Node):** Al intentar reemplazar líneas de JSX con `replace_file_content` o scripts, un bloque de código mal anclado provocó un `ReferenceError` (omisión del hook de estado). Se reafirmó la importancia de usar los tests automatizados completos después de realizar inyecciones en componentes densos.
 
-- **MVP 10 (Módulo de Tienda Virtual - Medusa Architecture):** COMPLETADO.
-  - Implementación nativa del esquema Medusa.js (Productos, Variantes, Órdenes, Líneas de Detalle) en el Prisma Schema de Celeritas.
-  - **Headless Storefront:** Rutas públicas `/store`, `/store/p/[handle]`, y `/store/checkout` altamente optimizadas y minimalistas.
-  - **Persistencia de Carrito:** Proveedor de React Context (`StoreCartProvider`) sincronizado con `localStorage` aislado por tenant (`celeritas_cart_[tenant]`).
-  - **Motor Transaccional:** `createOrder` implementado como Prisma Transaction (`$transaction`). Verifica inventario en tiempo real, descuenta el stock atómicamente y genera la orden.
-
-## Hito Alcanzado
-Hemos completado el **Roadmap de los 10 MVPs Fundacionales**. Celeritas ahora es un SaaS multi-tenant plenamente funcional con capacidad para habilitar a demanda:
-- Sitio Web Base
-- CRM + Kanban
-- Motor de Cotizaciones + PDFs
-- Motor de Citas (Clon Cal.com)
-- Control de Proyectos (Gantt + Kanban)
-- Tienda Virtual (Arquitectura Medusa.js)
-
-## Decisiones Arquitectónicas Recientes
-- Se movió el ecosistema de tenants a `src/app/site/[tenant]` y se ajustó `proxy.ts` para resolver el conflicto del App Router entre `/[lang]` y `/[tenant]`.
-
-## 🚨 Issues conocidos
-- **GitHub Spec Kit (`specify`) instalado exitosamente**: A diferencia de npm, `specify` fue instalado mediante el repositorio oficial de Python (`pip`). El proyecto fue inicializado en el directorio actual y se ha validado que los templates y la constitución ya residen en `.specify/memory/constitution.md`.
-- El Middleware de Next.js en Edge Runtime falla al usar `PrismaClient` directamente. Se dejó comentada la llamada directa a Prisma en `tenant-middleware.ts` para evitar crash; la resolución final de tenant deberá hacerse a través de inyección de headers (subdominio) y consultas en Server Components o un fetch hacia una API Route.
-- **Error de conexión a la Base de Datos (Supabase):** Al intentar aplicar la migración a la nueva base de datos (`nxhfluxdylpsgnodmxyq`), el servidor rechaza las credenciales con un error de `Authentication failed`. La contraseña (`yP1BDksAG4jM21$`) fue correctamente configurada usando url-encoding (`%24`) en el `.env`, por lo que es posible que haya un typo en la contraseña original que me compartiste o la base de datos de Supabase se encuentre pausada/bloqueando la IP. Se generó el Prisma Client localmente de todas formas.
-- Las invitaciones se están enviando, pero aún no existe la vista `/auth/verify` para ser consumidas (se resolverá en el MVP 2).
-
-## 🔗 Enlaces importantes
-- Repositorio: C:\CODES\ExpertosMKD-website
-- Base de datos: (Supabase Celeritas)
-- Dominio de prueba: expertosmkd.com
+## 5. Próximos Pasos Exactos (Next Session)
+1. **Nuevo Módulo: ERP y Finanzas.**
+   - Iniciar la planeación del esquema de base de datos (`schema.prisma`) para manejar Ingresos, Egresos, Cuentas por Cobrar, Facturación Básica y Reportes Financieros.
+   - Construir el `ErpDashboardClient.tsx` siguiendo los lineamientos Dark Luxury y los estándares Multi-tenant (Zero-trust RLS).
+2. Continuar con la **separación de repositorios (Turborepo)** para aislar la landing page de `ExpertosMKD` de la plataforma `Celeritas` (tarea pospuesta de la fase de inicio).
+3. Revisar el archivo `celeritas_constitution.md` para asentar oficialmente el alcance del ERP como módulo core.
