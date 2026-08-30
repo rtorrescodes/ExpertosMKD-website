@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { createPerson } from "@/actions/crm";
-import { Plus, User, Mail, Phone, Briefcase, Linkedin, Building2 } from "lucide-react";
+import { createPerson, updatePerson, deletePerson } from "@/actions/crm";
 import { format } from "date-fns";
+import { User as UserIcon, Mail, Phone, Briefcase, Link as LinkIcon, Plus, Trash2, Building2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function PeopleClient({ people, companies }: { people: any[]; companies: any[] }) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPerson, setEditingPerson] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,15 +19,28 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    const result = await createPerson({
-      firstName: formData.get("firstName") as string,
-      lastName: formData.get("lastName") as string,
-      email: formData.get("email") as string,
-      phone: formData.get("phone") as string,
-      jobTitle: formData.get("jobTitle") as string,
-      linkedin: formData.get("linkedin") as string,
-      companyId: formData.get("companyId") as string || undefined,
-    });
+    const companyId = formData.get("companyId") as string;
+    
+    let result;
+    if (editingPerson) {
+      result = await updatePerson(editingPerson.id, {
+        firstName: formData.get("firstName") as string,
+        lastName: formData.get("lastName") as string,
+        email: formData.get("email") as string,
+        phone: formData.get("phone") as string,
+        jobTitle: formData.get("jobTitle") as string,
+        companyId: companyId || undefined,
+      });
+    } else {
+      result = await createPerson({
+        firstName: formData.get("firstName") as string,
+        lastName: formData.get("lastName") as string,
+        email: formData.get("email") as string,
+        phone: formData.get("phone") as string,
+        jobTitle: formData.get("jobTitle") as string,
+        companyId: companyId || undefined,
+      });
+    }
 
     if (result.error) {
       setError(result.error);
@@ -49,7 +63,7 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => { setEditingPerson(null); setIsModalOpen(true); }}
             type="button"
             className="flex items-center gap-2 rounded-md bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg shadow-cyan-500/20 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:from-cyan-400 hover:to-purple-500 hover:shadow-cyan-400/40"
           >
@@ -82,7 +96,7 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
                 </thead>
                 <tbody className="divide-y divide-white/5 glass-card border-white/5">
                   {people.map((person) => (
-                    <tr key={person.id} className="hover:bg-white/5 cursor-pointer">
+                    <tr key={person.id} className="hover:bg-white/5 cursor-pointer" onClick={() => { setEditingPerson(person); setIsModalOpen(true); }}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                         <div className="flex items-center">
                           <div className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-full bg-white/10 text-slate-400 font-bold">
@@ -131,17 +145,34 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <div className="relative transform overflow-hidden rounded-lg glass-card border-white/5 px-4 pb-4 pt-5 text-left shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <h3 className="text-lg font-semibold leading-6 text-white">Crear Contacto</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold leading-6 text-white">{editingPerson ? "Editar Persona" : "Crear Persona"}</h3>
+                    {editingPerson && (
+                      <button 
+                        type="button" 
+                        onClick={async () => {
+                          if (confirm('¿Eliminar persona?')) {
+                            await deletePerson(editingPerson.id);
+                            setIsModalOpen(false);
+                            router.refresh();
+                          }
+                        }} 
+                        className="text-red-400 hover:text-red-300 transition-colors p-1"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
                   {error && <p className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded">{error}</p>}
                   <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-slate-300">Nombre</label>
-                        <input required type="text" name="firstName" className="mt-1 block w-full rounded-md border p-2 text-sm border-white/10" />
+                        <input required type="text" name="firstName" defaultValue={editingPerson?.firstName} className="mt-1 block w-full bg-[#01040f] border-white/10 text-white rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-slate-300">Apellidos</label>
-                        <input required type="text" name="lastName" className="mt-1 block w-full rounded-md border p-2 text-sm border-white/10" />
+                        <label className="block text-sm font-medium text-slate-300">Apellido</label>
+                        <input required type="text" name="lastName" defaultValue={editingPerson?.lastName} className="mt-1 block w-full bg-[#01040f] border-white/10 text-white rounded-md border p-2 text-sm focus:outline-none focus:border-cyan-500" />
                       </div>
                     </div>
                     <div>
@@ -150,7 +181,7 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                           <Mail className="h-4 w-4 text-slate-500" />
                         </div>
-                        <input type="email" name="email" className="block w-full rounded-md border p-2 pl-10 text-sm border-white/10" />
+                        <input type="email" name="email" defaultValue={editingPerson?.email} className="bg-slate-900/60 border-white/10 text-white placeholder-slate-500 block w-full rounded-md border p-2 pl-10 text-sm focus:outline-none focus:border-cyan-500" />
                       </div>
                     </div>
                     <div>
@@ -159,18 +190,6 @@ export function PeopleClient({ people, companies }: { people: any[]; companies: 
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                           <Phone className="h-4 w-4 text-slate-500" />
                         </div>
-                        <input type="tel" name="phone" className="block w-full rounded-md border p-2 pl-10 text-sm border-white/10" />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-300">Empresa (Opcional)</label>
-                      <select name="companyId" className="mt-1 block w-full rounded-md border p-2 text-sm border-white/10 glass-card border-white/5">
-                        <option value="">-- Sin asignar --</option>
-                        {companies.map((c) => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
-                        ))}
-                      </select>
-                    </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-300">Cargo / Título</label>
                       <div className="relative mt-1 rounded-md shadow-sm">

@@ -1,78 +1,159 @@
 "use client";
 
 import { useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import { X, Calendar as CalendarIcon, User, Clock, Check, XCircle } from "lucide-react";
-import { updateBookingStatus } from "@/actions/appointments"; // We need to create this action!
+import { X, Calendar as CalendarIcon, User, Clock, Check, XCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { updateBookingStatus } from "@/actions/appointments";
 
 export function AppointmentsClient({ bookings, tenantSubdomain }: { bookings: any[], tenantSubdomain: string }) {
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState(
-    bookings.map(b => ({
-      id: b.id,
-      title: `${b.eventType.title} - ${b.customerName}`,
-      start: b.startTime,
-      end: b.endTime,
-      extendedProps: { ...b },
-      backgroundColor: b.status === "CONFIRMED" ? "#10b981" : b.status === "CANCELLED" ? "#ef4444" : "#f59e0b",
-      borderColor: "transparent",
-    }))
-  );
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
+  // Update local state to reflect status changes without refreshing
+  const [localBookings, setLocalBookings] = useState(bookings);
 
-  const handleEventClick = (info: any) => {
-    setSelectedBooking(info.event.extendedProps);
+  // Generate week days
+  const startOfWeek = new Date(currentDate);
+  startOfWeek.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Monday
+  
+  const weekDays = Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date(startOfWeek);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+
+  const nextWeek = () => {
+    const d = new Date(currentDate);
+    d.setDate(d.getDate() + 7);
+    setCurrentDate(d);
+  };
+
+  const prevWeek = () => {
+    const d = new Date(currentDate);
+    d.setDate(d.getDate() - 7);
+    setCurrentDate(d);
   };
 
   const handleStatusChange = async (newStatus: string) => {
     if (!selectedBooking) return;
     setLoading(true);
-    // update backend
     const res = await updateBookingStatus(selectedBooking.id, newStatus);
     if (res.success) {
-      // update local state
-      setEvents(events.map(ev => {
-        if (ev.id === selectedBooking.id) {
-          return {
-            ...ev,
-            extendedProps: { ...ev.extendedProps, status: newStatus },
-            backgroundColor: newStatus === "CONFIRMED" ? "#10b981" : newStatus === "CANCELLED" ? "#ef4444" : "#f59e0b"
-          };
-        }
-        return ev;
-      }));
-      setSelectedBooking(prev => ({ ...prev, status: newStatus }));
+      setLocalBookings(localBookings.map(b => 
+        b.id === selectedBooking.id ? { ...b, status: newStatus } : b
+      ));
+      setSelectedBooking((prev: any) => ({ ...prev, status: newStatus }));
     } else {
       alert(res.error);
     }
     setLoading(false);
   };
 
+  // Helper to place booking in the grid
+  const getBookingStyle = (booking: any) => {
+    const start = new Date(booking.startTime);
+    const end = new Date(booking.endTime);
+    
+    // Grid starts at 7 AM (hour 7)
+    const startHour = start.getHours() + (start.getMinutes() / 60);
+    const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60); // hours
+    
+    // Map to grid rows (each row is 1 hour, starting at 7 AM = row 1)
+    const topRow = (startHour - 7) + 1;
+    
+    return {
+      gridRow: `${Math.max(1, Math.floor(topRow * 4))} / span ${Math.ceil(duration * 4)}`, // 4 rows per hour (15min slots)
+      backgroundColor: booking.status === "CONFIRMED" ? "rgba(16, 185, 129, 0.2)" : 
+                       booking.status === "CANCELLED" ? "rgba(239, 68, 68, 0.2)" : 
+                       "rgba(245, 158, 11, 0.2)",
+      borderColor: booking.status === "CONFIRMED" ? "rgba(16, 185, 129, 0.5)" : 
+                   booking.status === "CANCELLED" ? "rgba(239, 68, 68, 0.5)" : 
+                   "rgba(245, 158, 11, 0.5)",
+      color: booking.status === "CONFIRMED" ? "#10b981" : 
+             booking.status === "CANCELLED" ? "#ef4444" : 
+             "#f59e0b",
+    };
+  };
+
   return (
-    <div className="bg-[#051424] p-6 rounded-xl border border-white/5 shadow-2xl">
+    <div className="bg-[#0a1526] p-6 rounded-xl border border-white/5 shadow-2xl flex flex-col h-[80vh]">
       
-      <div className="glass-card p-4 rounded-xl border-white/5 mb-6">
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="timeGridWeek"
-          headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay"
-          }}
-          locale="es"
-          slotMinTime="07:00:00"
-          slotMaxTime="21:00:00"
-          allDaySlot={false}
-          events={events}
-          eventClick={handleEventClick}
-          height="75vh"
-          themeSystem="standard"
-          eventClassNames="cursor-pointer hover:opacity-80 transition-opacity shadow-lg"
-        />
+      {/* Calendar Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-bold text-white capitalize">
+            {currentDate.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })}
+          </h2>
+          <div className="flex bg-[#051424] rounded-lg border border-white/10 p-1">
+            <button onClick={prevWeek} className="p-1 hover:bg-white/10 rounded text-slate-400"><ChevronLeft className="w-5 h-5" /></button>
+            <button onClick={() => setCurrentDate(new Date())} className="px-3 py-1 hover:bg-white/10 rounded text-slate-300 text-sm font-medium">Hoy</button>
+            <button onClick={nextWeek} className="p-1 hover:bg-white/10 rounded text-slate-400"><ChevronRight className="w-5 h-5" /></button>
+          </div>
+        </div>
+      </div>
+
+      {/* Custom Weekly Grid */}
+      <div className="flex-1 overflow-y-auto glass-card rounded-lg border border-white/5 flex flex-col">
+        <div className="grid grid-cols-8 border-b border-white/10 sticky top-0 bg-[#0a1526] z-20">
+          <div className="p-3 text-center border-r border-white/10">
+            <span className="text-xs font-semibold text-slate-500 uppercase">Hora</span>
+          </div>
+          {weekDays.map((day, i) => (
+            <div key={i} className={`p-3 text-center border-r border-white/10 ${day.toDateString() === new Date().toDateString() ? 'bg-cyan-500/10' : ''}`}>
+              <div className="text-xs font-semibold text-slate-400 uppercase">{day.toLocaleDateString('es-MX', { weekday: 'short' })}</div>
+              <div className={`text-lg font-bold mt-1 ${day.toDateString() === new Date().toDateString() ? 'text-cyan-400' : 'text-slate-300'}`}>
+                {day.getDate()}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex-1 overflow-y-auto relative bg-[#051424]">
+          <div className="grid grid-cols-8 min-h-[800px]">
+            
+            {/* Time labels column */}
+            <div className="border-r border-white/10 flex flex-col relative z-10 bg-[#0a1526]">
+              {Array.from({ length: 14 }).map((_, i) => (
+                <div key={i} className="h-16 border-b border-white/5 flex justify-center py-2">
+                  <span className="text-xs text-slate-500 font-medium">{i + 7}:00</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Days columns */}
+            {weekDays.map((day, dayIndex) => {
+              // Filter bookings for this day
+              const dayBookings = localBookings.filter(b => {
+                const bDate = new Date(b.startTime);
+                return bDate.getDate() === day.getDate() && bDate.getMonth() === day.getMonth() && bDate.getFullYear() === day.getFullYear();
+              });
+
+              return (
+                <div key={dayIndex} className="border-r border-white/10 relative">
+                  {/* Grid lines */}
+                  {Array.from({ length: 14 }).map((_, i) => (
+                    <div key={i} className="h-16 border-b border-white/5 pointer-events-none" />
+                  ))}
+
+                  {/* Booking Events */}
+                  <div className="absolute top-0 left-0 right-0 bottom-0 grid grid-rows-[repeat(56,minmax(0,1fr))] p-1 pointer-events-none">
+                    {dayBookings.map((booking) => (
+                      <div 
+                        key={booking.id}
+                        onClick={() => setSelectedBooking(booking)}
+                        className="rounded-md border border-l-4 p-1 overflow-hidden cursor-pointer hover:brightness-125 transition-all shadow-md pointer-events-auto"
+                        style={getBookingStyle(booking)}
+                      >
+                        <div className="text-[10px] font-bold truncate">{booking.eventType.title}</div>
+                        <div className="text-[9px] opacity-80 truncate">{booking.customerName}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Booking Details Modal */}
@@ -159,19 +240,6 @@ export function AppointmentsClient({ bookings, tenantSubdomain }: { bookings: an
           </div>
         </div>
       )}
-
-      <style jsx global>{`
-        .fc-theme-standard .fc-scrollgrid { border-color: rgba(255,255,255,0.1); }
-        .fc-theme-standard th { border-color: rgba(255,255,255,0.1); padding: 8px 0; color: #94a3b8; font-weight: 600; }
-        .fc-theme-standard td { border-color: rgba(255,255,255,0.1); }
-        .fc .fc-timegrid-slot { border-color: rgba(255,255,255,0.05); }
-        .fc .fc-button-primary { background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #e2e8f0; text-transform: capitalize; }
-        .fc .fc-button-primary:not(:disabled):active, .fc .fc-button-primary:not(:disabled).fc-button-active { background-color: rgba(0,240,255,0.2); border-color: rgba(0,240,255,0.5); color: #00f0ff; }
-        .fc .fc-toolbar-title { color: #f8fafc; font-size: 1.25rem; font-weight: 700; text-transform: capitalize; }
-        .fc-event-main { padding: 2px 4px; font-size: 0.75rem; font-weight: 600; }
-        .fc .fc-timegrid-now-indicator-line { border-color: #00f0ff; }
-        .fc .fc-timegrid-now-indicator-arrow { border-color: #00f0ff; }
-      `}</style>
     </div>
   );
 }

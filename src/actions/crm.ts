@@ -148,3 +148,72 @@ export async function updateOpportunityStage(id: string, newStage: string) {
     return { error: error.message || "Error al actualizar la etapa" };
   }
 }
+
+export async function updateCompany(id: string, data: { name: string; domain?: string; linkedin?: string; annualRevenue?: number; address?: string; }) {
+  try {
+    const user = await requireTenantUser();
+    const comp = await prisma.crmCompany.updateMany({ where: { id, tenantId: user.tenantId! }, data });
+    if (comp.count === 0) throw new Error("No encontrado");
+    revalidatePath(/site/[tenant]/dashboard/crm/companies, "page");
+    return { success: true };
+  } catch (error: any) { return { error: error.message }; }
+}
+
+export async function deleteCompany(id: string) {
+  try {
+    const user = await requireTenantUser();
+    await prisma.crmCompany.deleteMany({ where: { id, tenantId: user.tenantId! } });
+    revalidatePath(/site/[tenant]/dashboard/crm/companies, "page");
+    return { success: true };
+  } catch (error: any) { return { error: error.message }; }
+}
+
+export async function updatePerson(id: string, data: { firstName: string; lastName: string; email?: string; phone?: string; jobTitle?: string; companyId?: string; }) {
+  try {
+    const user = await requireTenantUser();
+    if (data.companyId) {
+      const company = await prisma.crmCompany.findFirst({ where: { id: data.companyId, tenantId: user.tenantId! } });
+      if (!company) throw new Error("La empresa no existe.");
+    }
+    const comp = await prisma.crmPerson.updateMany({ where: { id, tenantId: user.tenantId! }, data });
+    if (comp.count === 0) throw new Error("No encontrado");
+    revalidatePath(/site/[tenant]/dashboard/crm/people, "page");
+    return { success: true };
+  } catch (error: any) { return { error: error.message }; }
+}
+
+export async function deletePerson(id: string) {
+  try {
+    const user = await requireTenantUser();
+    await prisma.crmPerson.deleteMany({ where: { id, tenantId: user.tenantId! } });
+    revalidatePath(/site/[tenant]/dashboard/crm/people, "page");
+    return { success: true };
+  } catch (error: any) { return { error: error.message }; }
+}
+
+export async function updateOpportunity(id: string, data: { name: string; amount?: number; stage?: string; personId?: string; companyId?: string; }) {
+  try {
+    const user = await requireTenantUser();
+    if (data.companyId) {
+      const company = await prisma.crmCompany.findFirst({ where: { id: data.companyId, tenantId: user.tenantId! } });
+      if (!company) throw new Error("La empresa no existe.");
+    }
+    if (data.personId) {
+      const person = await prisma.crmPerson.findFirst({ where: { id: data.personId, tenantId: user.tenantId! } });
+      if (!person) throw new Error("La persona no existe.");
+    }
+    const comp = await prisma.crmOpportunity.updateMany({ where: { id, tenantId: user.tenantId! }, data });
+    if (comp.count === 0) throw new Error("No encontrado");
+    revalidatePath(/site/[tenant]/dashboard/crm/opportunities, "page");
+    return { success: true };
+  } catch (error: any) { return { error: error.message }; }
+}
+
+export async function deleteOpportunity(id: string) {
+  try {
+    const user = await requireTenantUser();
+    await prisma.crmOpportunity.deleteMany({ where: { id, tenantId: user.tenantId! } });
+    revalidatePath(/site/[tenant]/dashboard/crm/opportunities, "page");
+    return { success: true };
+  } catch (error: any) { return { error: error.message }; }
+}
