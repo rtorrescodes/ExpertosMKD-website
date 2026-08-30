@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createCompany } from "@/actions/crm";
-import { Plus, Building2, Globe, Linkedin, DollarSign, MapPin } from "lucide-react";
+import { Plus, Building2, Globe, Link, DollarSign, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 
@@ -145,7 +145,7 @@ export function CompaniesClient({ companies }: { companies: any[] }) {
                       <label className="block text-sm font-medium text-gray-700">LinkedIn URL</label>
                       <div className="relative mt-1 rounded-md shadow-sm">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <Linkedin className="h-4 w-4 text-gray-400" />
+                          <Link className="h-4 w-4 text-gray-400" />
                         </div>
                         <input type="url" name="linkedin" className="block w-full rounded-md border p-2 pl-10 text-sm border-gray-300" />
                       </div>

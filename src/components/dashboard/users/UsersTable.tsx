@@ -117,7 +117,7 @@ export function UsersTable({
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {person.emailVerified || person.lastLoginAt ? (
+                      {person.emailVerified ? (
                         <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                           Verificado
                         </span>
@@ -128,7 +128,7 @@ export function UsersTable({
                       )}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {format(new Date(person.createdAt), "MMM d, yyyy")}
+                      -
                     </td>
                     {canManage && (
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
